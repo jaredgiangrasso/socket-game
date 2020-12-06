@@ -1,16 +1,22 @@
 const express = require('express');
+
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const Game = require('./Game');
 
-app.use(express.static(__dirname + '/public'));
+const game = new Game();
+
+app.use(express.static(`${__dirname}/public`));
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.sendFile(`${__dirname}/public/index.html`);
 });
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  game.addPlayer();
+  io.sockets.emit('add player');
+
   socket.on('chat message', (msg) => {
     io.emit('chat message', msg);
   });
