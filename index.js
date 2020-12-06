@@ -15,11 +15,18 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   game.addPlayer();
-  io.sockets.emit('add player');
+  const playerCount = game.playerCount;
+  io.sockets.emit('add player', playerCount);
 
   socket.on('chat message', (msg) => {
     io.emit('chat message', msg);
   });
+
+  socket.on('disconnect', () => {
+    game.removePlayer();
+    const playerCount = game.playerCount;
+    io.sockets.emit('remove player', playerCount);
+  })
 });
 
 http.listen(3000, () => {

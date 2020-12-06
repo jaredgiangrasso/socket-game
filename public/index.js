@@ -1,5 +1,7 @@
 const socket = io();
 
+const game = new Game();
+
 // const handleFormSubmission = () => {
 //   const logSubmit = (e) => {
 //     e.preventDefault();
@@ -15,7 +17,19 @@ const socket = io();
 document.addEventListener('DOMContentLoaded', (event) => {
   // handleFormSubmission();
 
-  socket.on('add player', () => {
-    console.log('New Player');
+  socket.on('add player', (playerCount) => {
+    game.addPlayer(playerCount);
+    
+    setPlayerCount(playerCount);
+  });
+
+  socket.on('remove player', (playerCount) => {
+    game.removePlayer(playerCount);
+
+    setPlayerCount(playerCount);
   });
 });
+
+const setPlayerCount = playerCount => {
+  document.querySelector('#playerCount').textContent = playerCount;
+}

@@ -5,6 +5,8 @@
 
 body { 
   font: 13px Helvetica, Arial; 
-  /* background: url(beer.png); 
-  background-size: '50%'  */
+  background: url(pattern.png);
+  background-size: 150%;
 }
+
+/* off-white: #F5F3F3, dull-yellow: #F1D997 */
