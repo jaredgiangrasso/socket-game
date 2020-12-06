@@ -7,12 +7,19 @@ class Game {
 
   get playerCount() { return this._playerCount; }
 
-  addPlayer() {
-    this._playerCount += 1;
+  getPlayer(pid) { 
+    return this._players[pid];
   }
 
-  removePlayer() { 
+  addPlayer(pid) {
+    this._playerCount += 1;
+    this._players[pid] = { name: '', pid };
+  }
+
+  removePlayer(pid) { 
     this._playerCount -= 1;
+    const { [pid]: _, ...restPlayers } = this._players;
+    this._players = restPlayers;
   }
 }
 

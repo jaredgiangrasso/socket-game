@@ -14,18 +14,19 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  game.addPlayer();
-  const playerCount = game.playerCount;
-  io.sockets.emit('add player', playerCount);
+  const pid = socket.id;
+
+  game.addPlayer(pid);
+  const newPlayer = game.getPlayer(pid);
+  io.sockets.emit('add player', newPlayer);
 
   socket.on('chat message', (msg) => {
     io.emit('chat message', msg);
   });
 
   socket.on('disconnect', () => {
-    game.removePlayer();
-    const playerCount = game.playerCount;
-    io.sockets.emit('remove player', playerCount);
+    game.removePlayer(pid);
+    io.sockets.emit('remove player', pid);
   })
 });
 

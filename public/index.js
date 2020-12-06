@@ -17,19 +17,20 @@ const game = new Game();
 document.addEventListener('DOMContentLoaded', (event) => {
   // handleFormSubmission();
 
-  socket.on('add player', (playerCount) => {
-    game.addPlayer(playerCount);
-    
-    setPlayerCount(playerCount);
+  socket.on('add player', (newPlayer) => {
+    game.addPlayer(newPlayer);
+
+    setPlayerCount();
   });
 
-  socket.on('remove player', (playerCount) => {
-    game.removePlayer(playerCount);
-
-    setPlayerCount(playerCount);
+  socket.on('remove player', (pid) => {
+    game.removePlayer(pid);
+    
+    setPlayerCount();
   });
 });
 
-const setPlayerCount = playerCount => {
+const setPlayerCount = () => {
+  const playerCount = game.playerCount;
   document.querySelector('#playerCount').textContent = playerCount;
 }
