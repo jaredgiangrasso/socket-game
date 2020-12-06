@@ -14,5 +14,12 @@ const handleFormSubmission = () => {
 
 document.addEventListener("DOMContentLoaded", function(event) { 
   handleFormSubmission();
+
+  socket.on('chat message', function(msg){
+    const messageItem = document.createElement("li")
+    messageItem.textContent = msg;
+
+    document.querySelector('#messages').appendChild(messageItem);
+  });
 });
     
