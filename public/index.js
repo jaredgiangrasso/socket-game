@@ -12,7 +12,8 @@ const handleFormSubmit = (e) => {
   const formData = new FormData(document.forms['login-form']);
   const name = formData.get('name');
   const color = formData.get('color');
-  // send name, color to server
+
+  socket.emit('player ready', { name, color });
 };
 
 document.addEventListener('DOMContentLoaded', (event) => {
