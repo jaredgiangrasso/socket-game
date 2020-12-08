@@ -7,7 +7,7 @@ class Game {
 
   get playerCount() { return this._playerCount; }
 
-  getPlayer(pid) { 
+  getPlayer(pid) {
     return this._players[pid];
   }
 
@@ -16,7 +16,7 @@ class Game {
     this._players[pid] = { name: '', pid };
   }
 
-  removePlayer(pid) { 
+  removePlayer(pid) {
     this._playerCount -= 1;
     const { [pid]: _, ...restPlayers } = this._players;
     this._players = restPlayers;

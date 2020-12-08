@@ -18,7 +18,7 @@ io.on('connection', (socket) => {
 
   game.addPlayer(pid);
   const newPlayer = game.getPlayer(pid);
-  io.sockets.emit('add player', newPlayer);
+  io.sockets.emit('add player', { newPlayer, playerCount: game.playerCount });
 
   socket.on('chat message', (msg) => {
     io.emit('chat message', msg);
@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     game.removePlayer(pid);
     io.sockets.emit('remove player', pid);
-  })
+  });
 });
 
 http.listen(3000, () => {
