@@ -9,4 +9,8 @@ body {
   background-size: 150%;
 }
 
+#lobby {
+  display: none;
+}
+
 /* off-white: #F5F3F3, dull-yellow: #F1D997 */

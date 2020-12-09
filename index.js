@@ -16,15 +16,20 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   const pid = socket.id;
 
-  game.addPlayer(pid);
-  const newPlayer = game.getPlayer(pid);
-  io.sockets.emit('add player', { newPlayer, playerCount: game.playerCount });
-
-  socket.on('player ready', (data) => console.log(data));
+  socket.on('player ready', (data) => {
+    const { name, color } = data;
+    // TODO: first, check for an existing user with this name, if they exist, return an error event
+    game.addPlayer({ name, color, pid });
+    const newPlayer = game.getPlayer(pid);
+    io.sockets.emit('add player', { newPlayer, playerCount: game.playerCount });
+  });
 
   socket.on('disconnect', () => {
-    game.removePlayer(pid);
-    io.sockets.emit('remove player', pid);
+    const player = game.getPlayer(pid);
+    if (player) {
+      game.removePlayer(pid);
+      io.sockets.emit('remove player', pid);
+    }
   });
 });
 

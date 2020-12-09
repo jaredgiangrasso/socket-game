@@ -11,9 +11,14 @@ class Game {
     return this._players[pid];
   }
 
-  addPlayer(pid) {
-    this._playerCount += 1;
-    this._players[pid] = { name: '', pid };
+  addPlayer(data) {
+    const existingPlayer = this.getPlayer(data.pid);
+    if (!existingPlayer) {
+      this._playerCount += 1;
+
+      const { name, color, pid } = data;
+      this._players[pid] = { name, color, pid };
+    }
   }
 
   removePlayer(pid) {
