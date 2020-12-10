@@ -21,7 +21,8 @@ io.on('connection', (socket) => {
     // TODO: first, check for an existing user with this name, if they exist, return an error event
     game.addPlayer({ name, color, pid });
     const newPlayer = game.getPlayer(pid);
-    io.sockets.emit('add player', { newPlayer, playerCount: game.playerCount });
+
+    io.sockets.emit('add player', { newPlayer, players: game.players, playerCount: game.playerCount });
   });
 
   socket.on('disconnect', () => {

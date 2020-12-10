@@ -5,6 +5,8 @@ class Game {
     this._started = false;
   }
 
+  get players() { return this._players; }
+
   get playerCount() { return this._playerCount; }
 
   getPlayer(pid) {

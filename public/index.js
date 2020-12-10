@@ -2,9 +2,29 @@ const socket = io();
 
 const game = new Game();
 
+const removeChildren = (element) => {
+  while (element.lastChild) {
+    element.removeChild(element.lastChild);
+  }
+};
+
+const updatePlayerList = () => {
+  const playerList = document.getElementById('player-list');
+
+  removeChildren(playerList);
+
+  Object.values(game.players).forEach((player) => {
+    const li = document.createElement('li');
+    li.textContent = player.name;
+
+    playerList.appendChild(li);
+  });
+};
+
 const setPlayerCount = () => {
   const { playerCount } = game;
-  document.querySelector('#player-count').textContent = playerCount;
+
+  document.getElementById('player-count').textContent = playerCount;
 };
 
 const handleFormSubmit = (e) => {
@@ -27,26 +47,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const form = document.forms['login-form'];
   form.addEventListener('submit', handleFormSubmit, false);
 
-  socket.on('add player', ({ newPlayer, playerCount }) => {
-    game.addPlayer(newPlayer, playerCount);
+  socket.on('add player', ({ newPlayer, players, playerCount }) => {
+    game.playerCount = playerCount;
+    game.players = players;
     setPlayerCount();
 
     if (game.myId === newPlayer.pid) {
       document.getElementById('login').style.display = 'none';
       document.getElementById('lobby').style.display = 'block';
-
-      Object.values(game.players).forEach((player) => {
-        const li = document.createElement('li');
-        li.textContent = player.name;
-
-        document.getElementById('player-count').appendChild(li);
-      });
     }
+
+    updatePlayerList();
   });
 
   socket.on('remove player', (pid) => {
     game.removePlayer(pid);
 
+    updatePlayerList();
     setPlayerCount();
   });
 });
