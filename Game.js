@@ -3,14 +3,23 @@ class Game {
     this._players = {};
     this._playerCount = 0;
     this._started = false;
+    this._roundNumber = 0;
   }
 
   get players() { return this._players; }
 
   get playerCount() { return this._playerCount; }
 
+  set roundNumber(roundNumber) { this._roundNumber = roundNumber; }
+
   getPlayer(pid) {
     return this._players[pid];
+  }
+
+  getRandomPlayer() {
+    const playersArr = Object.values(this._players);
+    const randomInt = Math.floor(Math.random() * playersArr.length);
+    return playersArr[randomInt];
   }
 
   addPlayer(data) {

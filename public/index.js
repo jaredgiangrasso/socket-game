@@ -27,6 +27,13 @@ const setPlayerCount = () => {
   document.getElementById('player-count').textContent = playerCount;
 };
 
+const handleStart = () => {
+  socket.emit('game start');
+
+  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+};
+
 const handleFormSubmit = (e) => {
   e.preventDefault();
   const formData = new FormData(document.forms['login-form']);
@@ -59,6 +66,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     updatePlayerList();
   });
+
+  const startButton = document.getElementById('start-button');
+
+  startButton.addEventListener('click', handleStart, false);
+
+  socket.on('next turn', (player) => console.log(player));
 
   socket.on('remove player', (pid) => {
     game.removePlayer(pid);

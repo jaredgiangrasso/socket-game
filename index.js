@@ -25,6 +25,14 @@ io.on('connection', (socket) => {
     io.sockets.emit('add player', { newPlayer, players: game.players, playerCount: game.playerCount });
   });
 
+  socket.on('game start', () => {
+    game.roundNumber = 1;
+    game.started = true;
+
+    const randomPlayer = game.getRandomPlayer();
+    io.sockets.emit('next turn', randomPlayer);
+  });
+
   socket.on('disconnect', () => {
     const player = game.getPlayer(pid);
     if (player) {
