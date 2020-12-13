@@ -26,7 +26,9 @@
        </form>
     </div>
 
-    <div id="lobby">
+    <div id="in-progress">A game is currently in progress</div>
+    
+    <div id="game-lobby">
       <div>
         <h1>
           <span>Player Count:</span> 
@@ -37,13 +39,22 @@
         <h1>Players</h1>
         <ul id="player-list"></ul>
       </div>
-      <div>
-        <button id="start-button">Start</button>
-      </div>
-    </div>
 
-    <div id="game">
-      Game
+      <div id="lobby">
+        <div>
+          <button id="start-button">Start</button>
+        </div>
+      </div>
+  
+      <div id="game">
+        <div id="timer"></div>
+        <div id="wait-prompt"></div>
+        <div id="prompt">
+          <form id="prompt-form">
+            <input id="prompt-input" name="prompt" type="text">
+          </form>
+        </div>
+      </div>
     </div>
   </body>
 </html>

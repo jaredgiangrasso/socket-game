@@ -9,8 +9,12 @@ body {
   background-size: 150%;
 }
 
-#lobby, #game {
+#game-lobby, #game, #in-progress, #prompt {
   display: none;
+}
+
+.current-turn {
+  background: red;
 }
 
 /* off-white: #F5F3F3, dull-yellow: #F1D997 */

@@ -15,6 +15,7 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   const pid = socket.id;
+  io.sockets.emit('init', game.started);
 
   socket.on('player ready', (data) => {
     const { name, color } = data;
