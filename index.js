@@ -34,6 +34,12 @@ io.on('connection', (socket) => {
     io.sockets.emit('next turn', randomPlayer);
   });
 
+  socket.on('new prompt', (prompt) => {
+    game.prompt = prompt;
+
+    io.sockets.emit('new prompt', prompt);
+  });
+
   socket.on('disconnect', () => {
     const player = game.getPlayer(pid);
     if (player) {

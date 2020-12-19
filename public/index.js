@@ -1,26 +1,73 @@
 const socket = io();
 
-const game = new Game();
+const model = new GameModel();
+const view = new GameView();
+
+class EventEmitter {
+  constructor() {
+    this._events = {};
+  }
+
+  on(name, listener) {
+    if (!this._events[name]) {
+      this._events[name] = [];
+    }
+
+    this._events[name].push(listener);
+  }
+
+  removeListener(name, listenerToRemove) {
+    if (!this._events[name]) {
+      throw new Error(`Can't remove a listener. Event "${name}" doesn't exits.`);
+    }
+
+    const filterListeners = (listener) => listener !== listenerToRemove;
+
+    this._events[name] = this._events[name].filter(filterListeners);
+  }
+
+  emit(name, data) {
+    if (!this._events[name]) {
+      throw new Error(`Can't emit an event. Event "${name}" doesn't exits.`);
+    }
+
+    const fireCallbacks = (callback) => {
+      callback(data);
+    };
+
+    this._events[name].forEach(fireCallbacks);
+  }
+}
+
+/*
+///////////
+REFACTORING:
+///////////
+*/
 
 const showById = (id, show, displayValue = 'block') => {
   document.getElementById(id).style.display = show ? displayValue : 'none';
 };
 
+const updateRoundNumber = () => {
+  const roundNumber = document.getElementById('round-number');
+  roundNumber.textContent = model.roundNumber;
+};
+
 const updateTimer = (seconds) => {
   const timer = document.getElementById('timer');
-  if (seconds < 1) timer.textContent = '';
-  else timer.textContent = `${seconds} seconds remaining`;
+  if (seconds < 0) timer.textContent = '';
+  else timer.textContent = `${seconds} ${seconds === 1 ? 'second' : 'seconds'} remaining`;
 };
 
 const setTimer = (seconds) => new Promise((resolve, reject) => {
+  updateTimer(seconds);
   showById('timer', true);
-  const timer = document.getElementById('timer');
   let i = seconds;
 
   const int = setInterval(() => {
-    timer.textContent = i;
-    updateTimer(i);
     i -= 1;
+    updateTimer(i);
     if (i < 0) {
       resolve();
       clearInterval(int);
@@ -29,10 +76,12 @@ const setTimer = (seconds) => new Promise((resolve, reject) => {
 });
 
 const handlePromptSubmit = (e) => {
+  // Fix onSubmit function on form
   e.preventDefault();
   const formData = new FormData(document.forms['prompt-form']);
   const prompt = formData.get('prompt');
-  console.log(prompt);
+  socket.emit('new prompt', prompt);
+
   return false;
 };
 
@@ -47,7 +96,7 @@ const updatePlayerList = () => {
 
   removeChildren(playerList);
 
-  Object.values(game.players).forEach((player) => {
+  Object.values(model.players).forEach((player) => {
     const li = document.createElement('li');
     li.textContent = player.name;
     li.id = player.pid;
@@ -58,7 +107,7 @@ const updatePlayerList = () => {
 
 const updatePlayerTurn = (player) => {
   const { pid } = player;
-  game.playerTurn = pid;
+  model.playerTurn = pid;
 
   const playerListItems = document.getElementById('player-list').children;
   for (let i = 0; i < playerListItems.length; i += 1) {
@@ -69,14 +118,15 @@ const updatePlayerTurn = (player) => {
 };
 
 const setPlayerCount = () => {
-  const { playerCount } = game;
+  const { playerCount } = model;
 
   document.getElementById('player-count').textContent = playerCount;
 };
 
 const setStart = () => {
-  game.started = true;
+  model.setStart();
 
+  updateRoundNumber();
   showById('lobby', false);
   showById('game', true);
 };
@@ -102,11 +152,11 @@ const runGame = () => {
   form.addEventListener('submit', handleLoginSubmit, false);
 
   socket.on('add player', ({ newPlayer, players, playerCount }) => {
-    game.playerCount = playerCount;
-    game.players = players;
+    model.playerCount = playerCount;
+    model.players = players;
     setPlayerCount();
 
-    if (game.myId === newPlayer.pid) {
+    if (model.myId === newPlayer.pid) {
       showById('login', false);
       showById('game-lobby', true);
     }
@@ -119,27 +169,39 @@ const runGame = () => {
   startButton.addEventListener('click', handleStart, false);
 
   socket.on('next turn', async (player) => {
-    if (!game.started) setStart();
+    if (!model.started) setStart();
     updatePlayerTurn(player);
 
-    const isMyTurn = game.isMyTurn();
+    const isMyTurn = model.isMyTurn();
 
     if (isMyTurn) {
       showById('prompt', true);
     } else {
-      const waitPrompt = document.getElementById('wait-prompt');
       showById('wait-prompt', true);
     }
 
-    await setTimer(5);
+    await setTimer(3);
 
-    const promptForm = document.forms['prompt-form'];
+    if (isMyTurn) {
+      showById('prompt', false);
+    } else {
+      showById('response', true);
+    }
+
+    const promptForm = document.getElementById('prompt-form');
     promptForm.addEventListener('submit', handlePromptSubmit, false);
-    promptForm.dispatchEvent(new Event('submit'));
+    if (model.myId === model.playerTurn) promptForm.dispatchEvent(new Event('submit'));
+  });
+
+  socket.on('new prompt', (prompt) => {
+    model.prompt = prompt;
+
+    const promptTitle = document.getElementById('prompt-title');
+    promptTitle.textContent = prompt;
   });
 
   socket.on('remove player', (pid) => {
-    game.removePlayer(pid);
+    model.removePlayer(pid);
 
     updatePlayerList();
     setPlayerCount();
@@ -157,12 +219,12 @@ const getGameStatus = () => new Promise((resolve, reject) => {
 
 document.addEventListener('DOMContentLoaded', async (event) => {
   socket.on('connect', () => {
-    game.myId = socket.id;
+    model.myId = socket.id;
   });
 
   const gameStatus = await getGameStatus();
-  game.started = gameStatus;
+  model.started = gameStatus;
 
-  if (game.started) runInProgress();
+  if (model.started) runInProgress();
   else runGame();
 });

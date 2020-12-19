@@ -1,6 +1,6 @@
 * { 
   margin: 0; 
-  padding: 0; box-sizing: border-box; 
+  padding: 0; box-sizing: border-box;
 }
 
 body { 
@@ -9,12 +9,17 @@ body {
   background-size: 150%;
 }
 
-#game-lobby, #game, #in-progress, #prompt {
+#game-lobby, #game, #in-progress, #prompt, #response {
   display: none;
 }
 
 .current-turn {
   background: red;
+}
+
+#prompt-title {
+  text-align: center;
+  font-size: 50px;
 }
 
 /* off-white: #F5F3F3, dull-yellow: #F1D997 */

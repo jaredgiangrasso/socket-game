@@ -1,15 +1,27 @@
-class Game {
+class GameModel extends EventEmitter {
   constructor() {
+    super();
+
     this._playerCount = 0;
     this._players = {};
     this._myId = null;
     this._started = false;
     this._playerTurn = null;
+    this._prompt = '';
+    this._roundNumber = null;
   }
+
+  get roundNumber() { return this._roundNumber; }
+
+  set roundNumber(roundNumber) { this._roundNumber = roundNumber; }
 
   get playerCount() { return this._playerCount; }
 
   set playerCount(playerCount) { this._playerCount = playerCount; }
+
+  get prompt() { return this._prompt; }
+
+  set prompt(prompt) { this._prompt = prompt; }
 
   get myId() { return this._myId; }
 
@@ -36,6 +48,11 @@ class Game {
     this._playerCount -= 1;
     const { [pid]: _, ...restPlayers } = this._players;
     this._players = restPlayers;
+  }
+
+  setStart() {
+    this._started = true;
+    this._roundNumber = 1;
   }
 
   isMyTurn() {
