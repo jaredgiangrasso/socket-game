@@ -2,13 +2,13 @@ class GameModel extends EventEmitter {
   constructor() {
     super();
 
+    this._myId = null;
     this._playerCount = 0;
     this._players = {};
-    this._myId = null;
-    this._started = false;
     this._playerTurn = null;
     this._prompt = '';
     this._roundNumber = null;
+    this._started = false;
   }
 
   get roundNumber() { return this._roundNumber; }
@@ -39,15 +39,23 @@ class GameModel extends EventEmitter {
 
   set playerTurn(playerTurn) { this._playerTurn = playerTurn; }
 
-  addPlayer(newPlayer, playerCount) {
+  addPlayer(newPlayer, players, playerCount) {
     this._playerCount = playerCount;
-    this._players[newPlayer.pid] = newPlayer;
+    this._players = players;
+
+    this.emit('add player', playerCount);
+
+    if (this._myId === newPlayer.pid) {
+      this.emit('show lobby');
+    }
   }
 
   removePlayer(pid) {
     this._playerCount -= 1;
     const { [pid]: _, ...restPlayers } = this._players;
     this._players = restPlayers;
+
+    this.emit('remove player');
   }
 
   setStart() {
@@ -57,5 +65,18 @@ class GameModel extends EventEmitter {
 
   isMyTurn() {
     return this._myId === this._playerTurn;
+  }
+
+  newPrompt(prompt) {
+    this._prompt = prompt;
+    this.emit('new prompt');
+  }
+
+  nextTurn(player) {
+    if (!this._started) {
+      this.setStart();
+      this.emit('start game');
+    }
+    this.emit('next turn', player);
   }
 }

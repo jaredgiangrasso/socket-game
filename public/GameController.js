@@ -1,61 +1,41 @@
-class GameView extends EventEmitter {
+const socket = io();
+
+const handleLoginSubmit = (e) => {
+  e.preventDefault();
+  const formData = new FormData(document.forms['login-form']);
+  const name = formData.get('name');
+  const color = formData.get('color');
+
+  // TODO: handle invalid input with error message?
+  if (name && color) {
+    socket.emit('player ready', { name, color });
+  }
+};
+
+const handleStart = () => {
+  socket.emit('game start');
+};
+
+const handlePromptSubmit = (e) => {
+  // Fix onSubmit function on form
+  e.preventDefault();
+  const formData = new FormData(document.forms['prompt-form']);
+  const prompt = formData.get('prompt');
+  socket.emit('new prompt', prompt);
+
+  return false;
+};
+
+class GameController extends EventEmitter {
   constructor() {
     super();
 
-    this._playerCount = 0;
-    this._players = {};
-    this._myId = null;
-    this._started = false;
-    this._playerTurn = null;
-    this._prompt = '';
-    this._roundNumber = null;
-  }
+    this._loginForm = document.forms['login-form'];
+    this._promptForm = document.getElementById('prompt-form');
+    this._startButton = document.getElementById('start-button');
 
-  get roundNumber() { return this._roundNumber; }
-
-  set roundNumber(roundNumber) { this._roundNumber = roundNumber; }
-
-  get playerCount() { return this._playerCount; }
-
-  set playerCount(playerCount) { this._playerCount = playerCount; }
-
-  get prompt() { return this._prompt; }
-
-  set prompt(prompt) { this._prompt = prompt; }
-
-  get myId() { return this._myId; }
-
-  set myId(id) { this._myId = id; }
-
-  get players() { return this._players; }
-
-  set players(players) { this._players = players; }
-
-  get started() { return this._started; }
-
-  set started(started) { this._started = started; }
-
-  get playerTurn() { return this._playerTurn; }
-
-  set playerTurn(playerTurn) { this._playerTurn = playerTurn; }
-
-  addPlayer(newPlayer, playerCount) {
-    this._playerCount = playerCount;
-    this._players[newPlayer.pid] = newPlayer;
-  }
-
-  removePlayer(pid) {
-    this._playerCount -= 1;
-    const { [pid]: _, ...restPlayers } = this._players;
-    this._players = restPlayers;
-  }
-
-  setStart() {
-    this._started = true;
-    this._roundNumber = 1;
-  }
-
-  isMyTurn() {
-    return this._myId === this._playerTurn;
+    this._loginForm.addEventListener('submit', handleLoginSubmit, false);
+    this._promptForm.addEventListener('submit', handlePromptSubmit, false);
+    this._startButton.addEventListener('click', handleStart, false);
   }
 }
