@@ -1,5 +1,3 @@
-const socket = io();
-
 const handleLoginSubmit = (e) => {
   e.preventDefault();
   const formData = new FormData(document.forms['login-form']);

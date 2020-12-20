@@ -9,7 +9,7 @@ body {
   background-size: 150%;
 }
 
-#game-lobby, #game, #in-progress, #prompt, #response {
+#lobby, #game, #in-progress, #prompt, #response {
   display: none;
 }
 

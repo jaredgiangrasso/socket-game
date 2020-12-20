@@ -16,6 +16,7 @@ class GameView extends EventEmitter {
     this._inProgress = document.getElementById('in-progress');
     this._lobby = document.getElementById('lobby');
     this._login = document.getElementById('login');
+    this._playerCount = document.getElementById('player-count');
     this._playerList = document.getElementById('player-list');
     this._prompt = document.getElementById('prompt');
     this._promptForm = document.getElementById('prompt-form');
@@ -58,7 +59,7 @@ class GameView extends EventEmitter {
 
   _updatePlayerCount() {
     const { playerCount } = this._model;
-    document.getElementById('player-count').textContent = playerCount;
+    this._playerCount.textContent = playerCount;
   }
 
   _updatePlayerList() {
