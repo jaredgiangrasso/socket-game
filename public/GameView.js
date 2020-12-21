@@ -13,6 +13,8 @@ class GameView extends EventEmitter {
     super();
     this._model = model;
 
+    this._isMyTurn = this._model.isMyTurn();
+
     this._game = document.getElementById('game');
     this._inProgress = document.getElementById('in-progress');
     this._lobby = document.getElementById('lobby');
@@ -23,6 +25,7 @@ class GameView extends EventEmitter {
     this._promptForm = document.getElementById('prompt-form');
     this._promptTitle = document.getElementById('prompt-title');
     this._response = document.getElementById('response');
+    this._responseForm = document.getElementById('response-form');
     this._roundNumber = document.getElementById('round-number');
     this._timer = document.getElementById('timer');
     this._waitPrompt = document.getElementById('wait-prompt');
@@ -95,15 +98,24 @@ class GameView extends EventEmitter {
     this._updatePlayerList();
   }
 
-  newPrompt() {
+  async newPrompt() {
     this._promptTitle.textContent = this._model.prompt;
+
+    if (this._isMyTurn) {
+      showById(this._prompt, false);
+    } else {
+      showById(this._response, true);
+    }
+
+    await this._setTimer(3);
+
+    if (!this._isMyTurn) this._responseForm.dispatchEvent(new Event('submit'));
   }
 
   async nextTurn(player) {
     this._updatePlayerTurn(player);
 
-    const isMyTurn = this._model.isMyTurn();
-    if (isMyTurn) {
+    if (this._isMyTurn) {
       showById(this._prompt, true);
     } else {
       showById(this._waitPrompt, true);
@@ -111,12 +123,7 @@ class GameView extends EventEmitter {
 
     await this._setTimer(3);
 
-    if (isMyTurn) {
-      showById(this._prompt, false);
-    } else {
-      showById(this._response, true);
-    }
-    if (this._model.myId === this._model.playerTurn) this._promptForm.dispatchEvent(new Event('submit'));
+    if (this._isMyTurn) this._promptForm.dispatchEvent(new Event('submit'));
   }
 
   removePlayer() {

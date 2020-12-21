@@ -24,16 +24,28 @@ const handlePromptSubmit = (e) => {
   return false;
 };
 
+const handleResponseSubmit = (e) => {
+  e.preventDefault();
+  const formData = new FormData(document.forms['prompt-form']);
+  const response = formData.get('response');
+  console.log(response);
+  // socket.emit('new responses', {response});
+
+  return false;
+};
+
 class GameController extends EventEmitter {
   constructor() {
     super();
 
     this._loginForm = document.forms['login-form'];
     this._promptForm = document.getElementById('prompt-form');
+    this._responseForm = document.getElementById('response-form');
     this._startButton = document.getElementById('start-button');
 
     this._loginForm.addEventListener('submit', handleLoginSubmit, false);
     this._promptForm.addEventListener('submit', handlePromptSubmit, false);
+    this._responseForm.addEventListener('submit', handleResponseSubmit, false);
     this._startButton.addEventListener('click', handleStart, false);
   }
 }
