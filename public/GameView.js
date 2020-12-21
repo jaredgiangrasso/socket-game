@@ -13,6 +13,7 @@ class GameView extends EventEmitter {
     super();
     this._model = model;
 
+    this._game = document.getElementById('game');
     this._inProgress = document.getElementById('in-progress');
     this._lobby = document.getElementById('lobby');
     this._login = document.getElementById('login');
@@ -26,8 +27,8 @@ class GameView extends EventEmitter {
     this._timer = document.getElementById('timer');
     this._waitPrompt = document.getElementById('wait-prompt');
 
-    this.addPlayerUnlisten = this._model.on('addPlayer', () => this.addPlayer());
-    this.newPromptUnlisten = this._model.on('new prompt', (player) => this.nextTurn(player));
+    this.addPlayerUnlisten = this._model.on('add player', () => this.addPlayer());
+    this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.showLobbyUnlisten = this._model.on('show lobby', () => this.showLobby());
     this.startGameUnlisten = this._model.on('start game', () => this.startGame());
@@ -95,7 +96,7 @@ class GameView extends EventEmitter {
   }
 
   newPrompt() {
-    this._promptTitle.textContent = prompt;
+    this._promptTitle.textContent = this._model.prompt;
   }
 
   async nextTurn(player) {
