@@ -2,15 +2,22 @@ class Game {
   constructor() {
     this._players = {};
     this._playerCount = 0;
-    this._started = false;
+    this._responses = [];
     this._roundNumber = 0;
+    this._started = false;
   }
 
   get players() { return this._players; }
 
   get playerCount() { return this._playerCount; }
 
+  get responses() { return this._responses; }
+
   set roundNumber(roundNumber) { this._roundNumber = roundNumber; }
+
+  addResponse(response) {
+    this._responses.push(response);
+  }
 
   getPlayer(pid) {
     return this._players[pid];

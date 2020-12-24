@@ -37,7 +37,12 @@ io.on('connection', (socket) => {
   socket.on('new prompt', (prompt) => {
     game.prompt = prompt;
 
-    io.sockets.emit('new prompt', prompt);
+    io.sockets.emit('update prompt', prompt);
+  });
+
+  socket.on('new response', (response) => {
+    game.responses.push(response);
+    console.log(game.responses);
   });
 
   socket.on('disconnect', () => {

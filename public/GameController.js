@@ -24,28 +24,30 @@ const handlePromptSubmit = (e) => {
   return false;
 };
 
-const handleResponseSubmit = (e) => {
-  e.preventDefault();
-  const formData = new FormData(document.forms['prompt-form']);
-  const response = formData.get('response');
-  console.log(response);
-  // socket.emit('new responses', {response});
-
-  return false;
-};
-
 class GameController extends EventEmitter {
-  constructor() {
+  constructor(model) {
     super();
+    this._model = model;
 
     this._loginForm = document.forms['login-form'];
     this._promptForm = document.getElementById('prompt-form');
     this._responseForm = document.getElementById('response-form');
     this._startButton = document.getElementById('start-button');
 
+    this.handleResponseSubmit = this.handleResponseSubmit.bind(this);
+
     this._loginForm.addEventListener('submit', handleLoginSubmit, false);
     this._promptForm.addEventListener('submit', handlePromptSubmit, false);
-    this._responseForm.addEventListener('submit', handleResponseSubmit, false);
+    this._responseForm.addEventListener('submit', this.handleResponseSubmit, false);
     this._startButton.addEventListener('click', handleStart, false);
+  }
+
+  handleResponseSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(document.forms['response-form']);
+    const response = formData.get('response');
+    socket.emit('new response', { response, pid: this._model.myId });
+
+    return false;
   }
 }

@@ -3,7 +3,7 @@ const socket = io();
 document.addEventListener('DOMContentLoaded', async (event) => {
   const model = new GameModel();
   const view = new GameView(model);
-  const controller = new GameController();
+  const controller = new GameController(model);
 
   const runGame = () => {
     socket.on('add player', ({ newPlayer, players, playerCount }) => {
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       model.nextTurn(player);
     });
 
-    socket.on('new prompt', (prompt) => {
+    socket.on('update prompt', (prompt) => {
       model.newPrompt(prompt);
     });
 

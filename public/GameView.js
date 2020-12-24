@@ -13,8 +13,6 @@ class GameView extends EventEmitter {
     super();
     this._model = model;
 
-    this._isMyTurn = this._model.isMyTurn();
-
     this._game = document.getElementById('game');
     this._inProgress = document.getElementById('in-progress');
     this._lobby = document.getElementById('lobby');
@@ -101,21 +99,21 @@ class GameView extends EventEmitter {
   async newPrompt() {
     this._promptTitle.textContent = this._model.prompt;
 
-    if (this._isMyTurn) {
+    if (this._model.isMyTurn()) {
       showById(this._prompt, false);
     } else {
       showById(this._response, true);
     }
 
-    await this._setTimer(3);
+    await this._setTimer(5);
 
-    if (!this._isMyTurn) this._responseForm.dispatchEvent(new Event('submit'));
+    if (!this._model.isMyTurn()) this._responseForm.dispatchEvent(new Event('submit'));
   }
 
   async nextTurn(player) {
     this._updatePlayerTurn(player);
 
-    if (this._isMyTurn) {
+    if (this._model.isMyTurn()) {
       showById(this._prompt, true);
     } else {
       showById(this._waitPrompt, true);
@@ -123,7 +121,9 @@ class GameView extends EventEmitter {
 
     await this._setTimer(3);
 
-    if (this._isMyTurn) this._promptForm.dispatchEvent(new Event('submit'));
+    if (this._model.isMyTurn()) {
+      this._promptForm.dispatchEvent(new Event('submit'));
+    }
   }
 
   removePlayer() {
