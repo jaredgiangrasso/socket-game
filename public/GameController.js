@@ -46,7 +46,7 @@ class GameController extends EventEmitter {
     e.preventDefault();
     const formData = new FormData(document.forms['response-form']);
     const response = formData.get('response');
-    socket.emit('new response', { response, pid: this._model.myId });
+    socket.emit('new response', { value: response, pid: this._model.myId });
 
     return false;
   }

@@ -31,6 +31,7 @@ io.on('connection', (socket) => {
     game.started = true;
 
     const randomPlayer = game.getRandomPlayer();
+    game.playerTurn = randomPlayer.pid;
     io.sockets.emit('next turn', randomPlayer);
   });
 
@@ -42,7 +43,20 @@ io.on('connection', (socket) => {
 
   socket.on('new response', (response) => {
     game.responses.push(response);
-    console.log(game.responses);
+
+    const responses = Object.keys(game.players)
+      .filter((id) => id !== game.playerTurn)
+      .map((id) => {
+        const gameResponse = game.responses.find((res) => res.pid === id);
+
+        if (!gameResponse.value) {
+          return { value: 'PLACEHOLDER RESPONSE', pid: id };
+        }
+
+        return gameResponse;
+      });
+
+    io.sockets.emit('new responses', responses);
   });
 
   socket.on('disconnect', () => {

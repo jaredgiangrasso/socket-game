@@ -2,6 +2,7 @@ class Game {
   constructor() {
     this._players = {};
     this._playerCount = 0;
+    this._playerTurn = 0;
     this._responses = [];
     this._roundNumber = 0;
     this._started = false;
@@ -14,6 +15,10 @@ class Game {
   get responses() { return this._responses; }
 
   set roundNumber(roundNumber) { this._roundNumber = roundNumber; }
+
+  get playerTurn() { return this._playerTurn; }
+
+  set playerTurn(playerTurn) { this._playerTurn = playerTurn; }
 
   addResponse(response) {
     this._responses.push(response);

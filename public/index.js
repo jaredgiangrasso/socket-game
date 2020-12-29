@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       model.newPrompt(prompt);
     });
 
+    socket.on('new responses', (responses) => {
+      model.newResponses(responses);
+    });
+
     socket.on('remove player', (pid) => {
       model.removePlayer(pid);
     });

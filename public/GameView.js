@@ -30,6 +30,7 @@ class GameView extends EventEmitter {
 
     this.addPlayerUnlisten = this._model.on('add player', () => this.addPlayer());
     this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
+    this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.showLobbyUnlisten = this._model.on('show lobby', () => this.showLobby());
     this.startGameUnlisten = this._model.on('start game', () => this.startGame());
@@ -67,9 +68,17 @@ class GameView extends EventEmitter {
   _updatePlayerList() {
     removeChildren(this._playerList);
     Object.values(this._model.players).forEach((player) => {
+      const name = document.createElement('span');
+      name.classList.add('name');
+      name.textContent = player.name;
+
+      const response = document.createElement('span');
+      response.classList.add('response');
+
       const li = document.createElement('li');
-      li.textContent = player.name;
       li.id = player.pid;
+      li.appendChild(name);
+      li.appendChild(response);
 
       this._playerList.appendChild(li);
     });
@@ -110,6 +119,19 @@ class GameView extends EventEmitter {
     if (!this._model.isMyTurn()) this._responseForm.dispatchEvent(new Event('submit'));
   }
 
+  newResponses(responses) {
+    const playerListItems = this._playerList.childNodes;
+    [...playerListItems]
+    // filter out player whose turn it is
+      .filter()
+    // update text content of others (use id?)
+      .forEach((listItem) => {
+        const playerResponse = responses.find((response) => response.pid === listItem.id);
+        const responseElement = document.querySelector('.player-list .response');
+        responseElement.textContent = playerResponse.value;
+      });
+  }
+
   async nextTurn(player) {
     this._updatePlayerTurn(player);
 
@@ -143,7 +165,6 @@ class GameView extends EventEmitter {
 
   startGame() {
     this._updateRoundNumber();
-    showById(this._lobby, false);
     showById(this._game, true);
   }
 }

@@ -72,6 +72,11 @@ class GameModel extends EventEmitter {
     this.emit('new prompt');
   }
 
+  newResponses(responses) {
+    this._responses = responses;
+    this.emit('new responses', responses);
+  }
+
   nextTurn(player) {
     if (!this._started) {
       this.setStart();
