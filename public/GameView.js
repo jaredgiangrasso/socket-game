@@ -25,6 +25,7 @@ class GameView extends EventEmitter {
     this._response = document.getElementById('response');
     this._responseForm = document.getElementById('response-form');
     this._roundNumber = document.getElementById('round-number');
+    this._startButtonWrapper = document.getElementById('start-button-wrapper');
     this._timer = document.getElementById('timer');
     this._waitPrompt = document.getElementById('wait-prompt');
 
@@ -120,16 +121,12 @@ class GameView extends EventEmitter {
   }
 
   newResponses(responses) {
-    const playerListItems = this._playerList.childNodes;
-    [...playerListItems]
-    // filter out player whose turn it is
-      .filter()
-    // update text content of others (use id?)
-      .forEach((listItem) => {
-        const playerResponse = responses.find((response) => response.pid === listItem.id);
-        const responseElement = document.querySelector('.player-list .response');
-        responseElement.textContent = playerResponse.value;
-      });
+    responses.forEach((response) => {
+      if (response.pid !== this._model.playerTurn) {
+        const responseElement = document.querySelector(`#player-list #${response.pid} .response`);
+        responseElement.textContent = response.value;
+      }
+    });
   }
 
   async nextTurn(player) {
@@ -165,6 +162,7 @@ class GameView extends EventEmitter {
 
   startGame() {
     this._updateRoundNumber();
+    showById(this._startButtonWrapper, false);
     showById(this._game, true);
   }
 }
