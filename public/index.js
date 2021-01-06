@@ -25,6 +25,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     socket.on('remove player', (pid) => {
       model.removePlayer(pid);
     });
+
+    socket.on('request prompt', () => {
+      controller.submitPrompts();
+    });
   };
 
   const getGameStatus = () => new Promise((resolve, reject) => {

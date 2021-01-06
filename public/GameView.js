@@ -76,10 +76,14 @@ class GameView extends EventEmitter {
       const response = document.createElement('span');
       response.classList.add('response');
 
+      const container = document.createElement('div');
+      container.id = 'player-list-item-container';
+      container.appendChild(name);
+      container.appendChild(response);
+
       const li = document.createElement('li');
       li.id = player.pid;
-      li.appendChild(name);
-      li.appendChild(response);
+      li.appendChild(container);
 
       this._playerList.appendChild(li);
     });
@@ -124,6 +128,7 @@ class GameView extends EventEmitter {
     responses.forEach((response) => {
       if (response.pid !== this._model.playerTurn) {
         const responseElement = document.querySelector(`#player-list #${response.pid} .response`);
+
         responseElement.textContent = response.value;
       }
     });
@@ -136,12 +141,6 @@ class GameView extends EventEmitter {
       showById(this._prompt, true);
     } else {
       showById(this._waitPrompt, true);
-    }
-
-    await this._setTimer(3);
-
-    if (this._model.isMyTurn()) {
-      this._promptForm.dispatchEvent(new Event('submit'));
     }
   }
 

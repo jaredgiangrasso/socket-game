@@ -33,6 +33,10 @@ io.on('connection', (socket) => {
     const randomPlayer = game.getRandomPlayer();
     game.playerTurn = randomPlayer.pid;
     io.sockets.emit('next turn', randomPlayer);
+
+    setTimeout(() => {
+      io.sockets.emit('request prompt');
+    }, 5000);
   });
 
   socket.on('new prompt', (prompt) => {

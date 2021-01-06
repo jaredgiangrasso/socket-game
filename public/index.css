@@ -22,4 +22,13 @@ body {
   font-size: 50px;
 }
 
+#player-list-wrapper {
+  width: 50%;
+}
+
+#player-list-item-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 /* off-white: #F5F3F3, dull-yellow: #F1D997 */

@@ -42,6 +42,13 @@ class GameController extends EventEmitter {
     this._startButton.addEventListener('click', handleStart, false);
   }
 
+  submitPrompts() {
+    console.log('submtting');
+    if (this._model.isMyTurn()) {
+      this._promptForm.dispatchEvent(new Event('submit'));
+    }
+  }
+
   handleResponseSubmit(e) {
     e.preventDefault();
     const formData = new FormData(document.forms['response-form']);
