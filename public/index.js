@@ -27,7 +27,11 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     });
 
     socket.on('request prompt', () => {
-      controller.submitPrompts();
+      model.updateGamePhase('prompt requested');
+    });
+
+    socket.on('request response', () => {
+      model.updateGamePhase('response requested');
     });
   };
 

@@ -120,21 +120,24 @@ class GameView extends EventEmitter {
     }
 
     await this._setTimer(5);
-
-    if (!this._model.isMyTurn()) this._responseForm.dispatchEvent(new Event('submit'));
   }
 
   newResponses(responses) {
     responses.forEach((response) => {
       if (response.pid !== this._model.playerTurn) {
+        const listItem = document.querySelector(`#player-list #${response.pid} #player-list-item-container`);
         const responseElement = document.querySelector(`#player-list #${response.pid} .response`);
 
+        const button = document.createElement('button');
+        button.textContent = 'Vote';
+
+        listItem.appendChild(button);
         responseElement.textContent = response.value;
       }
     });
   }
 
-  async nextTurn(player) {
+  nextTurn(player) {
     this._updatePlayerTurn(player);
 
     if (this._model.isMyTurn()) {
@@ -142,6 +145,8 @@ class GameView extends EventEmitter {
     } else {
       showById(this._waitPrompt, true);
     }
+
+    this._setTimer(5);
   }
 
   removePlayer() {

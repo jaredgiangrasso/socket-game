@@ -36,16 +36,24 @@ class GameController extends EventEmitter {
 
     this.handleResponseSubmit = this.handleResponseSubmit.bind(this);
 
+    this.addPromptRequestedUnlisten = this._model.on('prompt requested', () => this.submitPrompt());
+    this.addResponseRequestedUnlisten = this._model.on('response requested', () => this.submitResponse());
+
     this._loginForm.addEventListener('submit', handleLoginSubmit, false);
     this._promptForm.addEventListener('submit', handlePromptSubmit, false);
     this._responseForm.addEventListener('submit', this.handleResponseSubmit, false);
     this._startButton.addEventListener('click', handleStart, false);
   }
 
-  submitPrompts() {
-    console.log('submtting');
+  submitPrompt() {
     if (this._model.isMyTurn()) {
       this._promptForm.dispatchEvent(new Event('submit'));
+    }
+  }
+
+  submitResponse() {
+    if (!this._model.isMyTurn()) {
+      this._responseForm.dispatchEvent(new Event('submit'));
     }
   }
 

@@ -43,6 +43,10 @@ io.on('connection', (socket) => {
     game.prompt = prompt;
 
     io.sockets.emit('update prompt', prompt);
+
+    setTimeout(() => {
+      io.sockets.emit('request response');
+    }, 5000);
   });
 
   socket.on('new response', (response) => {

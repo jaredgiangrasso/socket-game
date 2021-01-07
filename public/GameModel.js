@@ -2,6 +2,7 @@ class GameModel extends EventEmitter {
   constructor() {
     super();
 
+    this._gamePhase = '';
     this._myId = null;
     this._playerCount = 0;
     this._players = {};
@@ -83,5 +84,10 @@ class GameModel extends EventEmitter {
       this.emit('start game');
     }
     this.emit('next turn', player);
+  }
+
+  updateGamePhase(gamePhase) {
+    this._gamePhase = gamePhase;
+    this.emit(gamePhase);
   }
 }
