@@ -14,35 +14,38 @@ const handleStart = () => {
   socket.emit('game start');
 };
 
-const handlePromptSubmit = (e) => {
-  // Fix onSubmit function on form
-  e.preventDefault();
-  const formData = new FormData(document.forms['prompt-form']);
-  const prompt = formData.get('prompt');
-  socket.emit('new prompt', prompt);
-
-  return false;
-};
-
 class GameController extends EventEmitter {
   constructor(model) {
     super();
     this._model = model;
 
     this._loginForm = document.forms['login-form'];
+    this._prompt = document.getElementById('prompt');
     this._promptForm = document.getElementById('prompt-form');
     this._responseForm = document.getElementById('response-form');
     this._startButton = document.getElementById('start-button');
 
     this.handleResponseSubmit = this.handleResponseSubmit.bind(this);
+    this.handlePromptSubmit = this.handlePromptSubmit.bind(this);
 
     this.addPromptRequestedUnlisten = this._model.on('prompt requested', () => this.submitPrompt());
     this.addResponseRequestedUnlisten = this._model.on('response requested', () => this.submitResponse());
 
     this._loginForm.addEventListener('submit', handleLoginSubmit, false);
-    this._promptForm.addEventListener('submit', handlePromptSubmit, false);
+    this._promptForm.addEventListener('submit', this.handlePromptSubmit, false);
     this._responseForm.addEventListener('submit', this.handleResponseSubmit, false);
     this._startButton.addEventListener('click', handleStart, false);
+  }
+
+  handlePromptSubmit(e) {
+    // Fix onSubmit function on form
+    e.preventDefault();
+    const formData = new FormData(document.forms['prompt-form']);
+    const prompt = formData.get('prompt');
+    socket.emit('new prompt', prompt);
+    showById(this._prompt, false);
+
+    return false;
   }
 
   submitPrompt() {
@@ -62,6 +65,7 @@ class GameController extends EventEmitter {
     const formData = new FormData(document.forms['response-form']);
     const response = formData.get('response');
     socket.emit('new response', { value: response, pid: this._model.myId });
+    showById(this._responseForm, false);
 
     return false;
   }

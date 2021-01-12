@@ -113,9 +113,7 @@ class GameView extends EventEmitter {
   async newPrompt() {
     this._promptTitle.textContent = this._model.prompt;
 
-    if (this._model.isMyTurn()) {
-      showById(this._prompt, false);
-    } else {
+    if (!this._model.isMyTurn()) {
       showById(this._response, true);
     }
 
@@ -126,12 +124,16 @@ class GameView extends EventEmitter {
     responses.forEach((response) => {
       if (response.pid !== this._model.playerTurn) {
         const listItem = document.querySelector(`#player-list #${response.pid} #player-list-item-container`);
+        const buttonElement = document.querySelector(`#player-list #${response.pid} #player-list-item-container #vote-button`);
         const responseElement = document.querySelector(`#player-list #${response.pid} .response`);
 
         const button = document.createElement('button');
+        button.id = 'vote-button';
         button.textContent = 'Vote';
 
-        listItem.appendChild(button);
+        if (!buttonElement) {
+          listItem.appendChild(button);
+        }
         responseElement.textContent = response.value;
       }
     });
