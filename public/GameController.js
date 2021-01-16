@@ -56,15 +56,29 @@ class GameController extends EventEmitter {
 
   submitResponse() {
     if (!this._model.isMyTurn()) {
-      this._responseForm.dispatchEvent(new Event('submit'));
+      if (this._model.myResponse) {
+        socket.emit('new response', { value: this._model.myResponse, pid: this._model.myId });
+        this._model.myResponse = '';
+      } else {
+        this._responseForm.dispatchEvent(new Event('submit'));
+      }
     }
   }
 
   handleResponseSubmit(e) {
+    const { gamePhase, myResponse } = this._model;
+
     e.preventDefault();
     const formData = new FormData(document.forms['response-form']);
     const response = formData.get('response');
-    socket.emit('new response', { value: response, pid: this._model.myId });
+
+    if (gamePhase !== 'response requested') {
+      this._model.myResponse = response;
+    } else {
+      const responseData = myResponse || response;
+
+      socket.emit('new response', { value: responseData, pid: this._model.myId });
+    }
     showById(this._responseForm, false);
 
     return false;

@@ -33,6 +33,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     socket.on('request response', () => {
       model.updateGamePhase('response requested');
     });
+
+    socket.on('request vote', () => {
+      console.log('here');
+    });
   };
 
   const getGameStatus = () => new Promise((resolve, reject) => {
