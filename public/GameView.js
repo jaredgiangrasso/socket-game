@@ -9,9 +9,10 @@ const removeChildren = (element) => {
 };
 
 class GameView extends EventEmitter {
-  constructor(model) {
+  constructor(model, controller) {
     super();
     this._model = model;
+    this._controller = controller;
 
     this._game = document.getElementById('game');
     this._inProgress = document.getElementById('in-progress');
@@ -128,8 +129,9 @@ class GameView extends EventEmitter {
         const responseElement = document.querySelector(`#player-list #${response.pid} .response`);
 
         const button = document.createElement('button');
-        button.id = 'vote-button';
+        button.classList.add('vote-button');
         button.textContent = 'Vote';
+        button.addEventListener('click', this._controller.handleVote.bind(this._controller), false)
 
         if (!buttonElement) {
           listItem.appendChild(button);

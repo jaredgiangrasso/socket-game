@@ -13,6 +13,12 @@ app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/public/index.html`);
 });
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 io.on('connection', (socket) => {
   const pid = socket.id;
   io.sockets.emit('init', game.started);
@@ -26,7 +32,7 @@ io.on('connection', (socket) => {
     io.sockets.emit('add player', { newPlayer, players: game.players, playerCount: game.playerCount });
   });
 
-  socket.on('game start', () => {
+  socket.on('game start', async() => {
     game.roundNumber = 1;
     game.started = true;
 
@@ -34,19 +40,18 @@ io.on('connection', (socket) => {
     game.playerTurn = randomPlayer.pid;
     io.sockets.emit('next turn', randomPlayer);
 
-    setTimeout(() => {
-      io.sockets.emit('request prompt');
-    }, 5000);
+    await sleep(5000);
+    io.sockets.emit('request prompt');
+    await sleep(5000);
+    io.sockets.emit('request response');
+    await sleep(5000);
+    io.sockets.emit('request vote');
   });
 
   socket.on('new prompt', (prompt) => {
     game.prompt = prompt;
 
     io.sockets.emit('update prompt', prompt);
-
-    setTimeout(() => {
-      io.sockets.emit('request response');
-    }, 5000);
   });
 
   socket.on('new response', (response) => {

@@ -4,7 +4,9 @@ class GameModel extends EventEmitter {
 
     this._gamePhase = '';
     this._myId = null;
+    this._myPrompt = '';
     this._myResponse = '';
+    this._myVote = '';
     this._playerCount = 0;
     this._players = {};
     this._playerTurn = null;
@@ -15,9 +17,17 @@ class GameModel extends EventEmitter {
 
   get gamePhase() { return this._gamePhase; }
 
+  get myPrompt() { return this._myPrompt; }
+
+  set myPrompt(prompt) { this._myPrompt = prompt; }
+
   get myResponse() { return this._myResponse; }
 
   set myResponse(response) { this._myResponse = response; }
+
+  get myVote() { return this._myVote; }
+
+  set myVote(vote) { this._myVote = vote; }
 
   get roundNumber() { return this._roundNumber; }
 

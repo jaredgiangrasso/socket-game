@@ -2,8 +2,8 @@ const socket = io();
 
 document.addEventListener('DOMContentLoaded', async (event) => {
   const model = new GameModel();
-  const view = new GameView(model);
   const controller = new GameController(model);
+  const view = new GameView(model, controller);
 
   const runGame = () => {
     socket.on('add player', ({ newPlayer, players, playerCount }) => {
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     });
 
     socket.on('request vote', () => {
-      console.log('here');
+      model.updateGamePhase('vote requested');
     });
   };
 
