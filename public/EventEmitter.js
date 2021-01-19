@@ -25,7 +25,7 @@ class EventEmitter {
 
   emit(name, data) {
     if (!this._events[name]) {
-      throw new Error(`Can't emit an event. Event "${name}" doesn't exits.`);
+      throw new Error(`Can't emit an event. Event "${name}" doesn't exist.`);
     }
 
     const fireCallbacks = (callback) => {

@@ -19,6 +19,8 @@ function sleep(ms) {
   });
 }
 
+const VOTE_POINTS = 50;
+
 io.on('connection', (socket) => {
   const pid = socket.id;
   io.sockets.emit('init', game.started);
@@ -32,9 +34,9 @@ io.on('connection', (socket) => {
     io.sockets.emit('add player', { newPlayer, players: game.players, playerCount: game.playerCount });
   });
 
-  socket.on('game start', async() => {
-    game.roundNumber = 1;
+  socket.on('game start', async () => {
     game.started = true;
+    game.nextRound();
 
     const randomPlayer = game.getRandomPlayer();
     game.playerTurn = randomPlayer.pid;
@@ -60,16 +62,20 @@ io.on('connection', (socket) => {
     const responses = Object.keys(game.players)
       .filter((id) => id !== game.playerTurn)
       .map((id) => {
-        const gameResponse = game.responses.find((res) => res.pid === id);
-
-        if (!gameResponse.value) {
-          return { value: 'PLACEHOLDER RESPONSE', pid: id };
-        }
-
+        const gameResponse = game.responses.find((response) => response.pid === id);
         return gameResponse;
       });
 
     io.sockets.emit('new responses', responses);
+  });
+
+  socket.on('new vote', (vote) => {
+    const { value, pid } = vote;
+    const { roundNumber, votes } = game;
+
+    game.players[pid].points += VOTE_POINTS;
+    votes[roundNumber][value] = votes[roundNumber][value] + 1;
+    console.log(game.votes);
   });
 
   socket.on('disconnect', () => {

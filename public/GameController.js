@@ -31,6 +31,7 @@ class GameController extends EventEmitter {
 
     this.addPromptRequestedUnlisten = this._model.on('prompt requested', () => this.submitPrompt());
     this.addResponseRequestedUnlisten = this._model.on('response requested', () => this.submitResponse());
+    this.addVoteRequestedUnlisten = this._model.on('vote requested', () => this.submitVote());
 
     this._loginForm.addEventListener('submit', handleLoginSubmit, false);
     this._promptForm.addEventListener('submit', this.handlePromptSubmit, false);
@@ -40,7 +41,7 @@ class GameController extends EventEmitter {
 
   handlePromptSubmit(e) {
     const { gamePhase, myPrompt } = this._model;
-    
+
     // Fix onSubmit function on form
     e.preventDefault();
     const formData = new FormData(document.forms['prompt-form']);
@@ -93,7 +94,9 @@ class GameController extends EventEmitter {
       const voteData = myVote || pid;
       socket.emit('new vote', { value: voteData, pid: this._model.myId });
     }
-    [...this._voteButtons].forEach(button => console.log(button));
+    [...this._voteButtons].forEach((button) => {
+      showById(button, false);
+    });
 
     return false;
   }
@@ -121,5 +124,10 @@ class GameController extends EventEmitter {
         this._responseForm.dispatchEvent(new Event('submit'));
       }
     }
+  }
+
+  submitVote() {
+    socket.emit('new vote', { value: this._model.myVote, pid: this._model.myId });
+    this._model.myVote = '';
   }
 }
