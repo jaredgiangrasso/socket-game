@@ -47,9 +47,11 @@ class GameController extends EventEmitter {
     const formData = new FormData(document.forms['prompt-form']);
     const prompt = formData.get('prompt');
 
-    // If the gamePhase is not 'prompt requested', the prompt has not been requested by the server meaning this is a manual submission
-    // and the prompt should only be stored locally for now. Otherwise, the server has requested the prompt and we either send
-    // what has been stored locally in myPrompt or the current value of the input.
+    // If the gamePhase is not 'prompt requested', the prompt has not been requested
+    // by the server meaning this is a manual submission
+    // and the prompt should only be stored locally for now. Otherwise, the server has
+    // requested the prompt and we either send what has been stored locally in myPrompt
+    // or the current value of the input.
     if (gamePhase !== 'prompt requested') {
       this._model.myPrompt = prompt;
     } else {
@@ -94,11 +96,15 @@ class GameController extends EventEmitter {
       const voteData = myVote || pid;
       socket.emit('new vote', { value: voteData, pid: this._model.myId });
     }
+    this.hideVoteButtons();
+
+    return false;
+  }
+
+  hideVoteButtons() {
     [...this._voteButtons].forEach((button) => {
       showById(button, false);
     });
-
-    return false;
   }
 
   submitPrompt() {
@@ -129,5 +135,6 @@ class GameController extends EventEmitter {
   submitVote() {
     socket.emit('new vote', { value: this._model.myVote, pid: this._model.myId });
     this._model.myVote = '';
+    this.hideVoteButtons();
   }
 }

@@ -75,7 +75,6 @@ io.on('connection', (socket) => {
 
     game.players[pid].points += VOTE_POINTS;
     votes[roundNumber][value] = votes[roundNumber][value] + 1;
-    console.log(game.votes);
   });
 
   socket.on('disconnect', () => {

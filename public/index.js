@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       model.newResponses(responses);
     });
 
+    socket.on('new votes', (votes) => {
+      model.newVotes(votes);
+    });
+
     socket.on('remove player', (pid) => {
       model.removePlayer(pid);
     });

@@ -33,6 +33,7 @@ class GameView extends EventEmitter {
     this.addPlayerUnlisten = this._model.on('add player', () => this.addPlayer());
     this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
     this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
+    this.newVotesUnlisten = this._model.on('new votes', (votes) => this.newVotes(votes));
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.showLobbyUnlisten = this._model.on('show lobby', () => this.showLobby());
     this.startGameUnlisten = this._model.on('start game', () => this.startGame());
@@ -121,7 +122,7 @@ class GameView extends EventEmitter {
     await this._setTimer(5);
   }
 
-  newResponses(responses) {
+  async newResponses(responses) {
     responses.forEach((response) => {
       if (response.pid !== this._model.playerTurn) {
         const listItem = document.querySelector(`#player-list #${response.pid} #player-list-item-container`);
@@ -131,7 +132,7 @@ class GameView extends EventEmitter {
         const button = document.createElement('button');
         button.classList.add('vote-button');
         button.textContent = 'Vote';
-        button.addEventListener('click', this._controller.handleVote.bind(this._controller), false)
+        button.addEventListener('click', this._controller.handleVote.bind(this._controller), false);
 
         if (!buttonElement) {
           listItem.appendChild(button);
@@ -139,6 +140,12 @@ class GameView extends EventEmitter {
         responseElement.textContent = response.value;
       }
     });
+
+    await this._setTimer(5);
+  }
+
+  async newVotes(votes) {
+
   }
 
   nextTurn(player) {

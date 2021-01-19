@@ -13,6 +13,7 @@ class GameModel extends EventEmitter {
     this._prompt = '';
     this._roundNumber = null;
     this._started = false;
+    this._votes = {};
   }
 
   get gamePhase() { return this._gamePhase; }
@@ -93,6 +94,11 @@ class GameModel extends EventEmitter {
   newResponses(responses) {
     this._responses = responses;
     this.emit('new responses', responses);
+  }
+
+  newVotes(votes) {
+    this._votes = votes;
+    this.emit('new votes', votes);
   }
 
   nextTurn(player) {
