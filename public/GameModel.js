@@ -58,6 +58,8 @@ class GameModel extends EventEmitter {
 
   set playerTurn(playerTurn) { this._playerTurn = playerTurn; }
 
+  get votes() { return this._votes; }
+
   addPlayer(newPlayer, players, playerCount) {
     this._playerCount = playerCount;
     this._players = players;
@@ -96,8 +98,9 @@ class GameModel extends EventEmitter {
     this.emit('new responses', responses);
   }
 
-  newVotes(votes) {
+  newVotes(votes, players) {
     this._votes = votes;
+    this._players = players;
     this.emit('new votes', votes);
   }
 

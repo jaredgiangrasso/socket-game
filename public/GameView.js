@@ -28,6 +28,7 @@ class GameView extends EventEmitter {
     this._roundNumber = document.getElementById('round-number');
     this._startButtonWrapper = document.getElementById('start-button-wrapper');
     this._timer = document.getElementById('timer');
+    this._votes = document.getElementsByClassName('votes');
     this._waitPrompt = document.getElementById('wait-prompt');
 
     this.addPlayerUnlisten = this._model.on('add player', () => this.addPlayer());
@@ -68,7 +69,29 @@ class GameView extends EventEmitter {
     this._playerCount.textContent = playerCount;
   }
 
-  _updatePlayerList() {
+  _updatePoints() {
+    const { players } = this._model;
+
+    const playerListItems = document.querySelectorAll('#player-list li');
+    [...playerListItems].forEach((player) => {
+      const points = players[player.id].points;
+
+      const pointsElement = document.querySelector(`#player-list #${player.id} .points`);
+      pointsElement.textContent = points;
+    });
+  }
+
+  _updateVotes() {
+    const { votes, roundNumber } = this._model;
+
+    [...this._votes].forEach((vote) => {
+      const playerListItem = vote.parentElement.parentElement;
+      const voteCount = votes[roundNumber][playerListItem.id];
+      vote.textContent = voteCount;
+    });
+  }
+
+  _addPlayerListItem() {
     removeChildren(this._playerList);
     Object.values(this._model.players).forEach((player) => {
       const name = document.createElement('span');
@@ -78,10 +101,20 @@ class GameView extends EventEmitter {
       const response = document.createElement('span');
       response.classList.add('response');
 
+      const votes = document.createElement('span');
+      votes.classList.add('votes');
+      votes.textContent = '0';
+
+      const points = document.createElement('span');
+      points.classList.add('points');
+      points.textContent = player.points;
+
       const container = document.createElement('div');
       container.id = 'player-list-item-container';
       container.appendChild(name);
       container.appendChild(response);
+      container.appendChild(votes);
+      container.appendChild(points);
 
       const li = document.createElement('li');
       li.id = player.pid;
@@ -109,7 +142,7 @@ class GameView extends EventEmitter {
 
   addPlayer() {
     this._updatePlayerCount();
-    this._updatePlayerList();
+    this._addPlayerListItem();
   }
 
   async newPrompt() {
@@ -119,7 +152,7 @@ class GameView extends EventEmitter {
       showById(this._response, true);
     }
 
-    await this._setTimer(5);
+    await this._setTimer(2);
   }
 
   async newResponses(responses) {
@@ -141,11 +174,12 @@ class GameView extends EventEmitter {
       }
     });
 
-    await this._setTimer(5);
+    await this._setTimer(2);
   }
 
-  async newVotes(votes) {
-
+  async newVotes() {
+    this._updateVotes();
+    this._updatePoints();
   }
 
   nextTurn(player) {
@@ -157,7 +191,7 @@ class GameView extends EventEmitter {
       showById(this._waitPrompt, true);
     }
 
-    this._setTimer(5);
+    this._setTimer(2);
   }
 
   removePlayer() {

@@ -42,11 +42,11 @@ io.on('connection', (socket) => {
     game.playerTurn = randomPlayer.pid;
     io.sockets.emit('next turn', randomPlayer);
 
-    await sleep(5000);
+    await sleep(3000);
     io.sockets.emit('request prompt');
-    await sleep(5000);
+    await sleep(3000);
     io.sockets.emit('request response');
-    await sleep(5000);
+    await sleep(3000);
     io.sockets.emit('request vote');
   });
 
@@ -71,10 +71,11 @@ io.on('connection', (socket) => {
 
   socket.on('new vote', (vote) => {
     const { value, pid } = vote;
-    const { roundNumber, votes } = game;
+    const { roundNumber, votes, players } = game;
 
-    game.players[pid].points += VOTE_POINTS;
+    players[value].points += VOTE_POINTS;
     votes[roundNumber][value] = votes[roundNumber][value] + 1;
+    io.sockets.emit('new votes', { votes, players: game.players });
   });
 
   socket.on('disconnect', () => {

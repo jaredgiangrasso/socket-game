@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       model.newResponses(responses);
     });
 
-    socket.on('new votes', (votes) => {
-      model.newVotes(votes);
+    socket.on('new votes', ({ votes, players }) => {
+      model.newVotes(votes, players);
     });
 
     socket.on('remove player', (pid) => {
