@@ -28,17 +28,19 @@ class GameView extends EventEmitter {
     this._roundNumber = document.getElementById('round-number');
     this._startButtonWrapper = document.getElementById('start-button-wrapper');
     this._timer = document.getElementById('timer');
-    this._votes = document.getElementsByClassName('votes');
+    this._bestVotes = document.getElementsByClassName('best-votes');
     this._waitPrompt = document.getElementById('wait-prompt');
 
     this.addPlayerUnlisten = this._model.on('add player', () => this.addPlayer());
     this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
     this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
-    this.newVotesUnlisten = this._model.on('new votes', (votes) => this.newVotes(votes));
+    this.newBestVotesUnlisten = this._model.on('new best votes', (bestVotes) => this.newBestVotes(bestVotes));
+    this.newVoteWinnerUnlisten = this._model.on('new best vote winner', (voteWinner) => this.newVoteWinner(voteWinner));
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.showLobbyUnlisten = this._model.on('show lobby', () => this.showLobby());
     this.startGameUnlisten = this._model.on('start game', () => this.startGame());
     this.removePlayerUnlisten = this._model.on('removePlayer', () => this.removePlayer());
+    this.voteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
   }
 
   _updateTimer(seconds) {
@@ -74,19 +76,19 @@ class GameView extends EventEmitter {
 
     const playerListItems = document.querySelectorAll('#player-list li');
     [...playerListItems].forEach((player) => {
-      const points = players[player.id].points;
+      const { points } = players[player.id];
 
       const pointsElement = document.querySelector(`#player-list #${player.id} .points`);
       pointsElement.textContent = points;
     });
   }
 
-  _updateVotes() {
-    const { votes, roundNumber } = this._model;
+  _updateBestVotes() {
+    const { bestVotes, roundNumber } = this._model;
 
-    [...this._votes].forEach((vote) => {
+    [...this._bestVotes].forEach((vote) => {
       const playerListItem = vote.parentElement.parentElement;
-      const voteCount = votes[roundNumber][playerListItem.id];
+      const voteCount = bestVotes[roundNumber][playerListItem.id];
       vote.textContent = voteCount;
     });
   }
@@ -101,9 +103,9 @@ class GameView extends EventEmitter {
       const response = document.createElement('span');
       response.classList.add('response');
 
-      const votes = document.createElement('span');
-      votes.classList.add('votes');
-      votes.textContent = '0';
+      const bestVotes = document.createElement('span');
+      bestVotes.classList.add('best-votes');
+      bestVotes.textContent = '0';
 
       const points = document.createElement('span');
       points.classList.add('points');
@@ -113,7 +115,7 @@ class GameView extends EventEmitter {
       container.id = 'player-list-item-container';
       container.appendChild(name);
       container.appendChild(response);
-      container.appendChild(votes);
+      container.appendChild(bestVotes);
       container.appendChild(points);
 
       const li = document.createElement('li');
@@ -177,9 +179,13 @@ class GameView extends EventEmitter {
     await this._setTimer(2);
   }
 
-  async newVotes() {
-    this._updateVotes();
+  async newBestVotes() {
+    this._updateBestVotes();
     this._updatePoints();
+  }
+
+  newBestVoteWinner(voteWinner) {
+
   }
 
   nextTurn(player) {
@@ -213,5 +219,9 @@ class GameView extends EventEmitter {
     this._updateRoundNumber();
     showById(this._startButtonWrapper, false);
     showById(this._game, true);
+  }
+
+  voteRequested() {
+    this._setTimer(2);
   }
 }

@@ -6,7 +6,8 @@ class Game {
     this._responses = [];
     this._roundNumber = 0;
     this._started = false;
-    this._votes = {};
+    this._bestVotes = {};
+    this._bestVoteWinner = '';
   }
 
   get players() { return this._players; }
@@ -23,9 +24,13 @@ class Game {
 
   set roundNumber(roundNumber) { this._roundNumber = roundNumber; }
 
-  get votes() { return this._votes; }
+  get bestVotes() { return this._bestVotes; }
 
-  set votes(votes) { this._votes = votes; }
+  set bestVotes(bestVotes) { this._bestVotes = bestVotes; }
+
+  get voteWinner() { return this._bestVoteWinner; }
+
+  set voteWinner(voteWinner) { this._bestVoteWinner = voteWinner; }
 
   addPlayer(data) {
     const existingPlayer = this.getPlayer(data.pid);
@@ -55,7 +60,7 @@ class Game {
 
   nextRound() {
     this._roundNumber++;
-    this._votes[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
+    this._bestVotes[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
       ...accu,
       [curr]: 0,
     }), {});

@@ -48,6 +48,8 @@ io.on('connection', (socket) => {
     io.sockets.emit('request response');
     await sleep(3000);
     io.sockets.emit('request vote');
+    await sleep(2000);
+    io.sockets.emit('update best vote winner', game.voteWinner);
   });
 
   socket.on('new prompt', (prompt) => {
@@ -71,11 +73,24 @@ io.on('connection', (socket) => {
 
   socket.on('new vote', (vote) => {
     const { value, pid } = vote;
-    const { roundNumber, votes, players } = game;
+    const {
+      roundNumber, bestVotes, players,
+    } = game;
 
     players[value].points += VOTE_POINTS;
-    votes[roundNumber][value] = votes[roundNumber][value] + 1;
-    io.sockets.emit('new votes', { votes, players: game.players });
+    bestVotes[roundNumber][value] = bestVotes[roundNumber][value] + 1;
+    io.sockets.emit('new bestVotes', { bestVotes, players: game.players });
+
+    const currentWinner = Object.entries(bestVotes[roundNumber]).reduce((accu, curr) => {
+      const [pid, points] = curr;
+
+      if (points > accu.points) {
+        return { pid, points };
+      }
+      return accu;
+    }, { pid: '', points: -Infinity });
+    console.log(currentWinner.pid);
+    game.voteWinner = currentWinner.pid;
   });
 
   socket.on('disconnect', () => {

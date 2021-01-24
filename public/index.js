@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       model.newResponses(responses);
     });
 
-    socket.on('new votes', ({ votes, players }) => {
-      model.newVotes(votes, players);
+    socket.on('new best votes', ({ votes, players }) => {
+      model.newBestVotes(votes, players);
     });
 
     socket.on('remove player', (pid) => {
@@ -40,6 +40,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
     socket.on('request vote', () => {
       model.updateGamePhase('vote requested');
+    });
+
+    socket.on('update best vote winner', (winner) => {
+      model.update('best vote winner', winner);
     });
   };
 
