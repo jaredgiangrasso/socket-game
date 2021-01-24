@@ -14,6 +14,8 @@ class GameView extends EventEmitter {
     this._model = model;
     this._controller = controller;
 
+    this._bestVotes = document.getElementsByClassName('best-votes');
+    this._bestVoteWinner = document.getElementById('best-vote-winner');
     this._game = document.getElementById('game');
     this._inProgress = document.getElementById('in-progress');
     this._lobby = document.getElementById('lobby');
@@ -28,14 +30,13 @@ class GameView extends EventEmitter {
     this._roundNumber = document.getElementById('round-number');
     this._startButtonWrapper = document.getElementById('start-button-wrapper');
     this._timer = document.getElementById('timer');
-    this._bestVotes = document.getElementsByClassName('best-votes');
     this._waitPrompt = document.getElementById('wait-prompt');
 
     this.addPlayerUnlisten = this._model.on('add player', () => this.addPlayer());
     this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
     this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
     this.newBestVotesUnlisten = this._model.on('new best votes', (bestVotes) => this.newBestVotes(bestVotes));
-    this.newVoteWinnerUnlisten = this._model.on('new best vote winner', (voteWinner) => this.newVoteWinner(voteWinner));
+    this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', (winner) => this.newBestVoteWinner(winner));
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.showLobbyUnlisten = this._model.on('show lobby', () => this.showLobby());
     this.startGameUnlisten = this._model.on('start game', () => this.startGame());
@@ -184,8 +185,10 @@ class GameView extends EventEmitter {
     this._updatePoints();
   }
 
-  newBestVoteWinner(voteWinner) {
-
+  newBestVoteWinner(winner) {
+    // TODO: should display best response, not player name
+    const winnerName = this._model.players[winner].name;
+    this._bestVoteWinner.textContent = `Best Response: ${winnerName}`;
   }
 
   nextTurn(player) {

@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
     io.sockets.emit('request response');
     await sleep(3000);
     io.sockets.emit('request vote');
-    await sleep(2000);
+    await sleep(1000);
     io.sockets.emit('update best vote winner', game.voteWinner);
   });
 
@@ -89,7 +89,7 @@ io.on('connection', (socket) => {
       }
       return accu;
     }, { pid: '', points: -Infinity });
-    console.log(currentWinner.pid);
+
     game.voteWinner = currentWinner.pid;
   });
 

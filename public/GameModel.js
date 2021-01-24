@@ -113,13 +113,13 @@ class GameModel extends EventEmitter {
     this.emit('next turn', player);
   }
 
+  updateBestVoteWinner(winner) {
+    this._bestVoteWinner = winner;
+    this.emit('new best vote winner', winner);
+  }
+
   updateGamePhase(gamePhase) {
     this._gamePhase = gamePhase;
     this.emit(gamePhase);
-  }
-
-  updateVoteWinner(voteWinner) {
-    this._bestVoteWinner = voteWinner;
-    this.emit('new best vote winner', voteWinner);
   }
 }
