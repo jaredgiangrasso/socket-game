@@ -148,6 +148,10 @@ class GameView extends EventEmitter {
     this._addPlayerListItem();
   }
 
+  bestVoteRequested() {
+    this._setTimer(2);
+  }
+
   async newPrompt() {
     this._promptTitle.textContent = this._model.prompt;
 
@@ -222,9 +226,5 @@ class GameView extends EventEmitter {
     this._updateRoundNumber();
     showById(this._startButtonWrapper, false);
     showById(this._game, true);
-  }
-
-  voteRequested() {
-    this._setTimer(2);
   }
 }

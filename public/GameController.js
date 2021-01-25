@@ -31,7 +31,7 @@ class GameController extends EventEmitter {
 
     this.addPromptRequestedUnlisten = this._model.on('prompt requested', () => this.submitPrompt());
     this.addResponseRequestedUnlisten = this._model.on('response requested', () => this.submitResponse());
-    this.addVoteRequestedUnlisten = this._model.on('vote requested', () => this.submitVote());
+    this.addVoteRequestedUnlisten = this._model.on('best vote requested', () => this.submitVote());
 
     this._loginForm.addEventListener('submit', handleLoginSubmit, false);
     this._promptForm.addEventListener('submit', this.handlePromptSubmit, false);

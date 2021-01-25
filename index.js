@@ -37,19 +37,22 @@ io.on('connection', (socket) => {
   socket.on('game start', async () => {
     game.started = true;
     game.nextRound();
+    const WAIT_TIME = 3000;
 
     const randomPlayer = game.getRandomPlayer();
     game.playerTurn = randomPlayer.pid;
     io.sockets.emit('next turn', randomPlayer);
 
-    await sleep(3000);
+    await sleep(WAIT_TIME);
     io.sockets.emit('request prompt');
-    await sleep(3000);
+    await sleep(WAIT_TIME);
     io.sockets.emit('request response');
-    await sleep(3000);
-    io.sockets.emit('request vote');
-    await sleep(1000);
+    await sleep(WAIT_TIME);
+    io.sockets.emit('request best vote');
+    await sleep(500);
     io.sockets.emit('update best vote winner', game.voteWinner);
+    io.sockets.emit('request who vote');
+    await sleep(WAIT_TIME);
   });
 
   socket.on('new prompt', (prompt) => {

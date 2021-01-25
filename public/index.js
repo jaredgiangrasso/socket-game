@@ -38,8 +38,12 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       model.updateGamePhase('response requested');
     });
 
-    socket.on('request vote', () => {
-      model.updateGamePhase('vote requested');
+    socket.on('request best vote', () => {
+      model.updateGamePhase('best vote requested');
+    });
+
+    socket.on('request who vote', () => {
+      model.updateGamePhase('who vote requested');
     });
 
     socket.on('update best vote winner', (winner) => {
