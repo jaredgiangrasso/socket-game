@@ -18,6 +18,8 @@ class GameModel extends EventEmitter {
     this._started = false;
   }
 
+  get bestVotes() { return this._bestVotes; }
+
   get gamePhase() { return this._gamePhase; }
 
   get myPrompt() { return this._myPrompt; }
@@ -60,8 +62,6 @@ class GameModel extends EventEmitter {
 
   set playerTurn(playerTurn) { this._playerTurn = playerTurn; }
 
-  get bestVotes() { return this._bestVotes; }
-
   addPlayer(newPlayer, players, playerCount) {
     this._playerCount = playerCount;
     this._players = players;
@@ -100,10 +100,10 @@ class GameModel extends EventEmitter {
     this.emit('new responses', responses);
   }
 
-  newbestVotes(bestVotes, players) {
+  newBestVotes(bestVotes, players) {
     this._bestVotes = bestVotes;
     this._players = players;
-    this.emit('new bestVotes', bestVotes);
+    this.emit('new best votes', bestVotes);
   }
 
   nextTurn(player) {

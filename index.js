@@ -82,23 +82,24 @@ io.on('connection', (socket) => {
   socket.on('new vote', (vote) => {
     const { value } = vote;
     const {
-      roundNumber, bestVotes, players,
+      roundNumber, bestVotes, players, responses
     } = game;
 
     players[value].points += VOTE_POINTS;
     bestVotes[roundNumber][value] = bestVotes[roundNumber][value] + 1;
-    io.sockets.emit('new best votes', { bestVotes, players: game.players });
+    io.sockets.emit('new best votes', { votes: bestVotes, players: game.players });
 
     const currentBestVoteWinner = Object.entries(bestVotes[roundNumber]).reduce((accu, curr) => {
       const [currPid, points] = curr;
 
       if (points > accu.points) {
-        return { pid: currPid, points };
+        return { pid: currPid, response: responses[roundNumber][currPid] };
       }
       return accu;
+      // TODO: What if no one has voted?
     }, { pid: '', points: -Infinity });
 
-    game.bestVoteWinner = currentBestVoteWinner.pid;
+    game.bestVoteWinner = currentBestVoteWinner;
   });
 
   socket.on('disconnect', () => {

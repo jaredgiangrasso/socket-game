@@ -190,9 +190,7 @@ class GameView extends EventEmitter {
   }
 
   newBestVoteWinner(winner) {
-    // TODO: should display best response, not player name
-    const winnerName = this._model.players[winner].name;
-    this._bestVoteWinner.textContent = `Best Response: ${winnerName}`;
+    this._bestVoteWinner.textContent = `Best Response: ${winner.response}`;
   }
 
   nextTurn(player) {
