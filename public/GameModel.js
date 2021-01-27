@@ -2,6 +2,8 @@ class GameModel extends EventEmitter {
   constructor() {
     super();
 
+    this._bestVotes = {};
+    this._bestVoteWinner = '';
     this._gamePhase = '';
     this._myId = null;
     this._myPrompt = '';
@@ -11,10 +13,9 @@ class GameModel extends EventEmitter {
     this._players = {};
     this._playerTurn = null;
     this._prompt = '';
+    this._responses = [];
     this._roundNumber = null;
     this._started = false;
-    this._bestVotes = {};
-    this._bestVoteWinner = '';
   }
 
   get gamePhase() { return this._gamePhase; }

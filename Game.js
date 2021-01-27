@@ -3,7 +3,7 @@ class Game {
     this._players = {};
     this._playerCount = 0;
     this._playerTurn = 0;
-    this._responses = [];
+    this._responses = {};
     this._roundNumber = 0;
     this._started = false;
     this._bestVotes = {};
@@ -59,10 +59,15 @@ class Game {
   }
 
   nextRound() {
-    this._roundNumber++;
+    this._roundNumber += 1;
     this._bestVotes[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
       ...accu,
       [curr]: 0,
+    }), {});
+
+    this._responses[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
+      ...accu,
+      [curr]: '',
     }), {});
   }
 

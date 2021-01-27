@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     });
 
     socket.on('update best vote winner', (winner) => {
+      console.log(winner);
       model.updateBestVoteWinner(winner);
     });
   };

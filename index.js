@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
     await sleep(WAIT_TIME);
     io.sockets.emit('request best vote');
     await sleep(500);
-    io.sockets.emit('update best vote winner', game.voteWinner);
+    io.sockets.emit('update best vote winner', game.bestVoteWinner);
     io.sockets.emit('request who vote');
     await sleep(WAIT_TIME);
   });
@@ -62,38 +62,43 @@ io.on('connection', (socket) => {
   });
 
   socket.on('new response', (response) => {
-    game.responses.push(response);
+    const { value, pid: responsePid } = response;
+    const {
+      roundNumber, responses, players, playerTurn,
+    } = game;
 
-    const responses = Object.keys(game.players)
-      .filter((id) => id !== game.playerTurn)
-      .map((id) => {
-        const gameResponse = game.responses.find((response) => response.pid === id);
-        return gameResponse;
-      });
+    responses[roundNumber][responsePid] = value;
 
-    io.sockets.emit('new responses', responses);
+    const responsesResponse = Object.keys(players)
+      .filter((id) => id !== playerTurn)
+      .map((id) => ({
+        pid: id,
+        value: responses[roundNumber][id],
+      }));
+
+    io.sockets.emit('new responses', responsesResponse);
   });
 
   socket.on('new vote', (vote) => {
-    const { value, pid } = vote;
+    const { value } = vote;
     const {
       roundNumber, bestVotes, players,
     } = game;
 
     players[value].points += VOTE_POINTS;
     bestVotes[roundNumber][value] = bestVotes[roundNumber][value] + 1;
-    io.sockets.emit('new bestVotes', { bestVotes, players: game.players });
+    io.sockets.emit('new best votes', { bestVotes, players: game.players });
 
-    const currentWinner = Object.entries(bestVotes[roundNumber]).reduce((accu, curr) => {
-      const [pid, points] = curr;
+    const currentBestVoteWinner = Object.entries(bestVotes[roundNumber]).reduce((accu, curr) => {
+      const [currPid, points] = curr;
 
       if (points > accu.points) {
-        return { pid, points };
+        return { pid: currPid, points };
       }
       return accu;
     }, { pid: '', points: -Infinity });
 
-    game.voteWinner = currentWinner.pid;
+    game.bestVoteWinner = currentBestVoteWinner.pid;
   });
 
   socket.on('disconnect', () => {
