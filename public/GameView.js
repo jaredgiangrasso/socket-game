@@ -27,6 +27,7 @@ class GameView extends EventEmitter {
     this._promptTitle = document.getElementById('prompt-title');
     this._response = document.getElementById('response');
     this._responseForm = document.getElementById('response-form');
+    this._responseList = document.getElementById('response-list');
     this._roundNumber = document.getElementById('round-number');
     this._startButtonWrapper = document.getElementById('start-button-wrapper');
     this._timer = document.getElementById('timer');
@@ -101,9 +102,6 @@ class GameView extends EventEmitter {
       name.classList.add('name');
       name.textContent = player.name;
 
-      const response = document.createElement('span');
-      response.classList.add('response');
-
       const bestVotes = document.createElement('span');
       bestVotes.classList.add('best-votes');
       bestVotes.textContent = '0';
@@ -115,7 +113,6 @@ class GameView extends EventEmitter {
       const container = document.createElement('div');
       container.id = 'player-list-item-container';
       container.appendChild(name);
-      container.appendChild(response);
       container.appendChild(bestVotes);
       container.appendChild(points);
 
@@ -165,19 +162,29 @@ class GameView extends EventEmitter {
   async newResponses(responses) {
     responses.forEach((response) => {
       if (response.pid !== this._model.playerTurn) {
-        const listItem = document.querySelector(`#player-list #${response.pid} #player-list-item-container`);
-        const buttonElement = document.querySelector(`#player-list #${response.pid} #player-list-item-container #vote-button`);
-        const responseElement = document.querySelector(`#player-list #${response.pid} .response`);
+        const existingListItem = document.querySelector(`#response-list .${response.pid}`);
 
-        const button = document.createElement('button');
-        button.classList.add('vote-button');
-        button.textContent = 'Vote';
-        button.addEventListener('click', this._controller.handleVote.bind(this._controller), false);
+        if (!existingListItem) {
+          const responseEl = document.createElement('span');
+          responseEl.classList.add('response');
+          responseEl.textContent = response.value;
 
-        if (!buttonElement) {
-          listItem.appendChild(button);
+          const button = document.createElement('button');
+          button.classList.add('vote-button');
+          button.textContent = 'Vote';
+          button.addEventListener('click', this._controller.handleVote.bind(this._controller), false);
+
+          const container = document.createElement('div');
+          container.id = 'player-list-item-container';
+          container.appendChild(responseEl);
+          container.appendChild(button);
+
+          const listItem = document.createElement('li');
+          listItem.classList.add(response.pid);
+          listItem.appendChild(container);
+
+          this._responseList.appendChild(listItem);
         }
-        responseElement.textContent = response.value;
       }
     });
 
