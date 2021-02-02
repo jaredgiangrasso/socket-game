@@ -1,3 +1,5 @@
+import EventEmitter from './EventEmitter.js';
+
 class GameModel extends EventEmitter {
   constructor() {
     super();
@@ -124,3 +126,5 @@ class GameModel extends EventEmitter {
     this.emit(gamePhase);
   }
 }
+
+export default GameModel;

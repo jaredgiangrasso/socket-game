@@ -1,3 +1,7 @@
+import EventEmitter from './EventEmitter.js';
+import socket from './socket.js';
+import { showById } from './helpers.js';
+
 const handleLoginSubmit = (e) => {
   e.preventDefault();
   const formData = new FormData(document.forms['login-form']);
@@ -138,3 +142,5 @@ class GameController extends EventEmitter {
     this.hideVoteButtons();
   }
 }
+
+export default GameController;

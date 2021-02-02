@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
     await sleep(500);
     io.sockets.emit('update best vote winner', game.bestVoteWinner);
     io.sockets.emit('request who vote');
-    await sleep(WAIT_TIME);
+    await sleep(WAIT_TIME + 2000);
   });
 
   socket.on('new prompt', (prompt) => {

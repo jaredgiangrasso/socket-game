@@ -1,4 +1,7 @@
-const socket = io();
+import GameView from './views/GameView.js';
+import GameModel from './GameModel.js';
+import GameController from './GameController.js';
+import socket from './socket.js';
 
 document.addEventListener('DOMContentLoaded', async (event) => {
   const model = new GameModel();

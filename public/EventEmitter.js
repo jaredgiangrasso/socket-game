@@ -35,3 +35,5 @@ class EventEmitter {
     this._events[name].forEach(fireCallbacks);
   }
 }
+
+export default EventEmitter;

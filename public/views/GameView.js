@@ -1,12 +1,5 @@
-const showById = (element, show, displayValue = 'block') => {
-  element.style.display = show ? displayValue : 'none';
-};
-
-const removeChildren = (element) => {
-  while (element.lastChild) {
-    element.removeChild(element.lastChild);
-  }
-};
+import { removeChildren, showById } from '../helpers.js';
+import EventEmitter from '../EventEmitter.js';
 
 class GameView extends EventEmitter {
   constructor(model, controller) {
@@ -27,7 +20,8 @@ class GameView extends EventEmitter {
     this._promptTitle = document.getElementById('prompt-title');
     this._response = document.getElementById('response');
     this._responseForm = document.getElementById('response-form');
-    this._responseList = document.getElementById('response-list');
+    this._responseVoteList = document.getElementById('response-vote-list');
+    this._responseVoteListWrapper = document.getElementById('response-vote-list-wrapper');
     this._roundNumber = document.getElementById('round-number');
     this._startButtonWrapper = document.getElementById('start-button-wrapper');
     this._timer = document.getElementById('timer');
@@ -42,7 +36,7 @@ class GameView extends EventEmitter {
     this.showLobbyUnlisten = this._model.on('show lobby', () => this.showLobby());
     this.startGameUnlisten = this._model.on('start game', () => this.startGame());
     this.removePlayerUnlisten = this._model.on('removePlayer', () => this.removePlayer());
-    this.voteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
+    this.bestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
   }
 
   _updateTimer(seconds) {
@@ -102,10 +96,6 @@ class GameView extends EventEmitter {
       name.classList.add('name');
       name.textContent = player.name;
 
-      const bestVotes = document.createElement('span');
-      bestVotes.classList.add('best-votes');
-      bestVotes.textContent = '0';
-
       const points = document.createElement('span');
       points.classList.add('points');
       points.textContent = player.points;
@@ -113,7 +103,6 @@ class GameView extends EventEmitter {
       const container = document.createElement('div');
       container.id = 'player-list-item-container';
       container.appendChild(name);
-      container.appendChild(bestVotes);
       container.appendChild(points);
 
       const li = document.createElement('li');
@@ -146,7 +135,13 @@ class GameView extends EventEmitter {
   }
 
   bestVoteRequested() {
-    this._setTimer(2);
+    this._setTimer(10);
+    showById(this._responseVoteListWrapper, false);
+    Object.values(this._model.players).forEach(({ name, pid }) => {
+      const nameEl = document.createElement('span');
+      nameEl.classList.add('name');
+      nameEl.textContent = name;
+    });
   }
 
   async newPrompt() {
@@ -169,6 +164,10 @@ class GameView extends EventEmitter {
           responseEl.classList.add('response');
           responseEl.textContent = response.value;
 
+          const bestVotes = document.createElement('span');
+          bestVotes.classList.add('best-votes');
+          bestVotes.textContent = '0';
+
           const button = document.createElement('button');
           button.classList.add('vote-button');
           button.textContent = 'Vote';
@@ -177,18 +176,19 @@ class GameView extends EventEmitter {
           const container = document.createElement('div');
           container.id = 'player-list-item-container';
           container.appendChild(responseEl);
+          container.appendChild(bestVotes);
           container.appendChild(button);
 
           const listItem = document.createElement('li');
           listItem.classList.add(response.pid);
           listItem.appendChild(container);
 
-          this._responseList.appendChild(listItem);
+          this._responseVoteList.appendChild(listItem);
         }
       }
     });
 
-    await this._setTimer(2);
+    await this._setTimer(5);
   }
 
   async newBestVotes() {
@@ -233,3 +233,5 @@ class GameView extends EventEmitter {
     showById(this._game, true);
   }
 }
+
+export default GameView;
