@@ -127,9 +127,7 @@ class GameView extends EventEmitter {
     this._bestVoteWinner.textContent = `Best Response: ${winner.response}`;
   }
 
-  nextTurn(player) {
-    this._updatePlayerTurn(player);
-
+  nextTurn() {
     if (this._model.isMyTurn()) {
       showById(this._prompt, true);
     } else {

@@ -17,6 +17,7 @@ class LobbyView extends EventEmitter {
     this._startButtonWrapper = document.getElementById('start-button-wrapper');
 
     this.addPlayerUnlisten = this._model.on('add player', () => this.addPlayer());
+    this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.showLobbyUnlisten = this._model.on('show lobby', () => this.showLobby());
     this.startGameUnlisten = this._model.on('start game', () => this.startGame());
     this.removePlayerUnlisten = this._model.on('removePlayer', () => this.removePlayer());
@@ -82,6 +83,10 @@ class LobbyView extends EventEmitter {
   addPlayer() {
     this._updatePlayerCount();
     this._addPlayerListItem();
+  }
+
+  nextTurn(player) {
+    this._updatePlayerTurn(player);
   }
 
   removePlayer() {
