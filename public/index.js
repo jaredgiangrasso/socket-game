@@ -1,3 +1,4 @@
+import LobbyView from './views/LobbyView.js';
 import GameView from './views/GameView.js';
 import GameModel from './GameModel.js';
 import GameController from './GameController.js';
@@ -6,7 +7,8 @@ import socket from './socket.js';
 document.addEventListener('DOMContentLoaded', async (event) => {
   const model = new GameModel();
   const controller = new GameController(model);
-  const view = new GameView(model, controller);
+  const lobbyView = new LobbyView(model, controller);
+  const gameView = new GameView(model, controller);
 
   const runGame = () => {
     socket.on('add player', ({ newPlayer, players, playerCount }) => {
@@ -65,6 +67,6 @@ document.addEventListener('DOMContentLoaded', async (event) => {
   const gameStatus = await getGameStatus();
   model.started = gameStatus;
 
-  if (model.started) view.showInProgress();
+  if (model.started) lobbyView.showInProgress();
   else runGame();
 });
