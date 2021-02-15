@@ -51,6 +51,7 @@ io.on('connection', (socket) => {
     io.sockets.emit('request best vote');
     await sleep(500);
     io.sockets.emit('update best vote winner', game.bestVoteWinner);
+    await sleep(WAIT_TIME);
     io.sockets.emit('request who vote');
     await sleep(WAIT_TIME + 2000);
   });
@@ -85,9 +86,11 @@ io.on('connection', (socket) => {
       roundNumber, bestVotes, players, responses,
     } = game;
 
-    players[value].points += VOTE_POINTS;
-    bestVotes[roundNumber][value] = bestVotes[roundNumber][value] + 1;
-    io.sockets.emit('new best votes', { votes: bestVotes, players: game.players });
+    if (vote.value) {
+      players[value].points += VOTE_POINTS;
+      bestVotes[roundNumber][value] += 1;
+      io.sockets.emit('new best votes', { votes: bestVotes, players: game.players });
+    }
 
     const currentBestVoteWinner = Object.entries(bestVotes[roundNumber]).reduce((accu, curr) => {
       const [currPid, points] = curr;
@@ -99,6 +102,19 @@ io.on('connection', (socket) => {
       // TODO: What if no one has voted?
     }, { pid: '', points: -Infinity });
     game.bestVoteWinner = currentBestVoteWinner;
+  });
+
+  socket.on('new who vote', (vote) => {
+    const { value } = vote;
+    const {
+      roundNumber, whoVotes, players,
+    } = game;
+
+    if (vote.value) {
+      players[value].points += VOTE_POINTS;
+      whoVotes[roundNumber][value] += 1;
+      io.sockets.emit('new who votes', { votes: whoVotes, players: game.players });
+    }
   });
 
   socket.on('disconnect', () => {

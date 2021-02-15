@@ -99,6 +99,18 @@ class GameController extends EventEmitter {
     return false;
   }
 
+  handleWhoVote(e) {
+    e.preventDefault();
+    const listItem = e.target.parentElement.parentElement;
+    // TODO: I don't think I should be using classname to store data
+    const pid = listItem.className;
+
+    this._model.myWhoVote = pid;
+    this.hideWhoVoteButtons();
+
+    return false;
+  }
+
   hideBestVoteButtons() {
     // TODO: define this selector in constructor
 
@@ -109,7 +121,10 @@ class GameController extends EventEmitter {
   }
 
   hideWhoVoteButtons() {
-    [...this._whoVoteButtons].forEach((button) => {
+    // TODO: define this selector in constructor
+
+    const whoVoteButtons = document.querySelectorAll('.player-vote-list-item-container .vote-button');
+    [...whoVoteButtons].forEach((button) => {
       showById(button, false);
     });
   }

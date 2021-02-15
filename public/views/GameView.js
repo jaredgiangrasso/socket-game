@@ -9,6 +9,7 @@ class GameView extends EventEmitter {
 
     this._bestVotes = document.getElementsByClassName('best-votes');
     this._bestVoteWinner = document.getElementById('best-vote-winner');
+    this._playerVoteList = document.getElementById('player-vote-list');
     this._prompt = document.getElementById('prompt');
     this._promptForm = document.getElementById('prompt-form');
     this._promptTitle = document.getElementById('prompt-title');
@@ -25,6 +26,31 @@ class GameView extends EventEmitter {
     this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', (winner) => this.newBestVoteWinner(winner));
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.bestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
+  }
+
+  _addPlayerVoteList() {
+    Object.values(this._model.players).forEach(({ name, pid }) => {
+      const container = document.createElement('div');
+      container.classList.add('player-vote-list-item-container');
+
+      const nameEl = document.createElement('span');
+      nameEl.classList.add('name');
+      nameEl.textContent = name;
+
+      const button = document.createElement('button');
+      button.classList.add('vote-button');
+      button.textContent = 'Vote';
+      button.addEventListener('click', this._controller.handleWhoVote.bind(this._controller), false);
+
+      container.appendChild(nameEl);
+      container.appendChild(button);
+
+      const li = document.createElement('li');
+      li.classList.add(pid);
+      li.appendChild(container);
+
+      this._playerVoteList.appendChild(li);
+    });
   }
 
   _setTimer(seconds) {
@@ -62,7 +88,7 @@ class GameView extends EventEmitter {
   }
 
   bestVoteRequested() {
-    this._setTimer(10);
+    this._setTimer(3);
     // showById(this._responseVoteListWrapper, false);
   }
 
@@ -80,7 +106,7 @@ class GameView extends EventEmitter {
   async newResponses(responses) {
     responses.forEach((response) => {
       if (response.pid !== this._model.playerTurn) {
-        const existingListItem = document.querySelector(`.response-list .${response.pid}`);
+        const existingListItem = document.querySelector(`.response-vote-list .${response.pid}`);
 
         if (!existingListItem) {
           const responseEl = document.createElement('span');
@@ -120,11 +146,7 @@ class GameView extends EventEmitter {
 
   newBestVoteWinner(winner) {
     this._bestVoteWinner.textContent = `Best Response: ${winner.response}`;
-    Object.values(this._model.players).forEach(({ name, pid }) => {
-      const nameEl = document.createElement('span');
-      nameEl.classList.add('name');
-      nameEl.textContent = name;
-    });
+    this._addPlayerVoteList();
   }
 
   nextTurn() {

@@ -8,6 +8,7 @@ class Game {
     this._started = false;
     this._bestVotes = {};
     this._bestVoteWinner = '';
+    this._whoVotes = {};
   }
 
   get players() { return this._players; }

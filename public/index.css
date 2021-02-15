@@ -22,11 +22,11 @@ body {
   font-size: 50px;
 }
 
-#player-list-wrapper, #response-vote-list-wrapper {
+#player-list-wrapper, #response-vote-list-wrapper, #player-vote-list {
   width: 250px;
 }
 
-.player-list-item-container, .response-vote-list-item-container {
+.player-list-item-container, .response-vote-list-item-container, .player-vote-list-item-container {
   display: flex;
   justify-content: space-between;
 }
