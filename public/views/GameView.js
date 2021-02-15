@@ -63,11 +63,6 @@ class GameView extends EventEmitter {
   bestVoteRequested() {
     this._setTimer(10);
     showById(this._responseVoteListWrapper, false);
-    Object.values(this._model.players).forEach(({ name, pid }) => {
-      const nameEl = document.createElement('span');
-      nameEl.classList.add('name');
-      nameEl.textContent = name;
-    });
   }
 
   async newPrompt() {
@@ -101,7 +96,7 @@ class GameView extends EventEmitter {
           button.addEventListener('click', this._controller.handleVote.bind(this._controller), false);
 
           const container = document.createElement('div');
-          container.id = 'player-list-item-container';
+          container.classList.add('response-item-container');
           container.appendChild(responseEl);
           container.appendChild(bestVotes);
           container.appendChild(button);
@@ -125,6 +120,11 @@ class GameView extends EventEmitter {
 
   newBestVoteWinner(winner) {
     this._bestVoteWinner.textContent = `Best Response: ${winner.response}`;
+    Object.values(this._model.players).forEach(({ name, pid }) => {
+      const nameEl = document.createElement('span');
+      nameEl.classList.add('name');
+      nameEl.textContent = name;
+    });
   }
 
   nextTurn() {

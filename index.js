@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
     io.sockets.emit('new responses', responsesResponse);
   });
 
-  socket.on('new vote', (vote) => {
+  socket.on('new best vote', (vote) => {
     const { value } = vote;
     const {
       roundNumber, bestVotes, players, responses

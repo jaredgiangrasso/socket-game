@@ -28,14 +28,16 @@ class GameController extends EventEmitter {
     this._promptForm = document.getElementById('prompt-form');
     this._responseForm = document.getElementById('response-form');
     this._startButton = document.getElementById('start-button');
-    this._voteButtons = document.getElementsByClassName('vote-button');
+    this._bestVoteButtons = document.querySelectorAll('.response-item-container .vote-button');
+    this._whoVoteButtons = document.querySelectorAll('.player-vote-item-container .vote-button');
 
     this.handleResponseSubmit = this.handleResponseSubmit.bind(this);
     this.handlePromptSubmit = this.handlePromptSubmit.bind(this);
 
     this.addPromptRequestedUnlisten = this._model.on('prompt requested', () => this.submitPrompt());
     this.addResponseRequestedUnlisten = this._model.on('response requested', () => this.submitResponse());
-    this.addVoteRequestedUnlisten = this._model.on('best vote requested', () => this.submitVote());
+    this.addBestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.submitBestVote());
+    this.addWhoVoteRequestUnlisten = this._model.on('who vote requested', () => this.submitWhoVote());
 
     this._loginForm.addEventListener('submit', handleLoginSubmit, false);
     this._promptForm.addEventListener('submit', this.handlePromptSubmit, false);
@@ -95,18 +97,24 @@ class GameController extends EventEmitter {
 
     // See notes on handleSubmitPrompt
     if (gamePhase !== 'vote requested') {
-      this._model.myVote = pid;
+      this._model.myBestVote = pid;
     } else {
       const voteData = myVote || pid;
       socket.emit('new vote', { value: voteData, pid: this._model.myId });
     }
-    this.hideVoteButtons();
+    this.hideBestVoteButtons();
 
     return false;
   }
 
-  hideVoteButtons() {
-    [...this._voteButtons].forEach((button) => {
+  hideBestVoteButtons() {
+    [...this._bestVoteButtons].forEach((button) => {
+      showById(button, false);
+    });
+  }
+
+  hideWhoVoteButtons() {
+    [...this._whoVoteButtons].forEach((button) => {
       showById(button, false);
     });
   }
@@ -136,10 +144,16 @@ class GameController extends EventEmitter {
     }
   }
 
-  submitVote() {
-    socket.emit('new vote', { value: this._model.myVote, pid: this._model.myId });
+  submitBestVote() {
+    socket.emit('new best vote', { value: this._model.myVote, pid: this._model.myId });
     this._model.myVote = '';
-    this.hideVoteButtons();
+    this.hideBestVoteButtons();
+  }
+
+  submitWhoVote() {
+    socket.emit('new who vote', { value: this._model.myVote, pid: this._model.myId });
+    this._model.myBestVote = '';
+    this.hideWhoVoteButtons();
   }
 }
 
