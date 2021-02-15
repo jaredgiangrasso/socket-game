@@ -79,7 +79,7 @@ class GameView extends EventEmitter {
   async newResponses(responses) {
     responses.forEach((response) => {
       if (response.pid !== this._model.playerTurn) {
-        const existingListItem = document.querySelector(`#response-list .${response.pid}`);
+        const existingListItem = document.querySelector(`.response-list .${response.pid}`);
 
         if (!existingListItem) {
           const responseEl = document.createElement('span');
@@ -93,7 +93,7 @@ class GameView extends EventEmitter {
           const button = document.createElement('button');
           button.classList.add('vote-button');
           button.textContent = 'Vote';
-          button.addEventListener('click', this._controller.handleVote.bind(this._controller), false);
+          button.addEventListener('click', this._controller.handleBestVote.bind(this._controller), false);
 
           const container = document.createElement('div');
           container.classList.add('response-item-container');

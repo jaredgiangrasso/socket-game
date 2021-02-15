@@ -88,27 +88,22 @@ class GameController extends EventEmitter {
     return false;
   }
 
-  handleVote(e) {
-    const { myVote, gamePhase } = this._model;
-
+  handleBestVote(e) {
     e.preventDefault();
     const listItem = e.target.parentElement.parentElement;
-    const pid = listItem.id;
+    const pid = listItem.className;
 
-    // See notes on handleSubmitPrompt
-    if (gamePhase !== 'vote requested') {
-      this._model.myBestVote = pid;
-    } else {
-      const voteData = myVote || pid;
-      socket.emit('new vote', { value: voteData, pid: this._model.myId });
-    }
+    this._model.myBestVote = pid;
     this.hideBestVoteButtons();
 
     return false;
   }
 
   hideBestVoteButtons() {
-    [...this._bestVoteButtons].forEach((button) => {
+    // TODO: define this selector in constructor
+
+    const bestVoteButtons = document.querySelectorAll('.response-item-container .vote-button');
+    [...bestVoteButtons].forEach((button) => {
       showById(button, false);
     });
   }
@@ -145,14 +140,14 @@ class GameController extends EventEmitter {
   }
 
   submitBestVote() {
-    socket.emit('new best vote', { value: this._model.myVote, pid: this._model.myId });
-    this._model.myVote = '';
+    socket.emit('new best vote', { value: this._model.myBestVote, pid: this._model.myId });
+    this._model.myBestVote = '';
     this.hideBestVoteButtons();
   }
 
   submitWhoVote() {
-    socket.emit('new who vote', { value: this._model.myVote, pid: this._model.myId });
-    this._model.myBestVote = '';
+    socket.emit('new who vote', { value: this._model.myWhoVote, pid: this._model.myId });
+    this._model.myWhoVote = '';
     this.hideWhoVoteButtons();
   }
 }

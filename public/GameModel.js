@@ -7,10 +7,11 @@ class GameModel extends EventEmitter {
     this._bestVotes = {};
     this._bestVoteWinner = '';
     this._gamePhase = '';
+    this._myBestVote = '';
     this._myId = null;
     this._myPrompt = '';
     this._myResponse = '';
-    this._myBestVote = '';
+    this._myWhoVote = '';
     this._playerCount = 0;
     this._players = {};
     this._playerTurn = null;
@@ -35,6 +36,10 @@ class GameModel extends EventEmitter {
   get myBestVote() { return this._myBestVote; }
 
   set myBestVote(vote) { this._myBestVote = vote; }
+
+  get myWhoVote() { return this._myWhoVote; }
+
+  set myWhoVote(vote) { this._myWhoVote = vote; }
 
   get roundNumber() { return this._roundNumber; }
 

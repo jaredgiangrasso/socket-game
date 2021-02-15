@@ -28,9 +28,9 @@ class Game {
 
   set bestVotes(bestVotes) { this._bestVotes = bestVotes; }
 
-  get voteWinner() { return this._bestVoteWinner; }
+  get bestVoteWinner() { return this._bestVoteWinner; }
 
-  set voteWinner(voteWinner) { this._bestVoteWinner = voteWinner; }
+  set bestVoteWinner(voteWinner) { this._bestVoteWinner = voteWinner; }
 
   addPlayer(data) {
     const existingPlayer = this.getPlayer(data.pid);

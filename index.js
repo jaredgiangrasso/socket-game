@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
   socket.on('new best vote', (vote) => {
     const { value } = vote;
     const {
-      roundNumber, bestVotes, players, responses
+      roundNumber, bestVotes, players, responses,
     } = game;
 
     players[value].points += VOTE_POINTS;
@@ -98,7 +98,6 @@ io.on('connection', (socket) => {
       return accu;
       // TODO: What if no one has voted?
     }, { pid: '', points: -Infinity });
-
     game.bestVoteWinner = currentBestVoteWinner;
   });
 
