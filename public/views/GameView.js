@@ -49,7 +49,8 @@ class GameView extends EventEmitter {
 
     [...this._bestVotes].forEach((vote) => {
       const playerListItem = vote.parentElement.parentElement;
-      const voteCount = bestVotes[roundNumber][playerListItem.id];
+      // TODO: I don't think I should be using className to store this data
+      const voteCount = bestVotes[roundNumber][playerListItem.className];
       vote.textContent = voteCount;
     });
   }
@@ -62,7 +63,7 @@ class GameView extends EventEmitter {
 
   bestVoteRequested() {
     this._setTimer(10);
-    showById(this._responseVoteListWrapper, false);
+    // showById(this._responseVoteListWrapper, false);
   }
 
   async newPrompt() {
@@ -96,7 +97,7 @@ class GameView extends EventEmitter {
           button.addEventListener('click', this._controller.handleBestVote.bind(this._controller), false);
 
           const container = document.createElement('div');
-          container.classList.add('response-item-container');
+          container.classList.add('response-vote-list-item-container');
           container.appendChild(responseEl);
           container.appendChild(bestVotes);
           container.appendChild(button);
@@ -110,12 +111,11 @@ class GameView extends EventEmitter {
       }
     });
 
-    await this._setTimer(5);
+    await this._setTimer(3);
   }
 
   async newBestVotes() {
     this._updateBestVotes();
-    this._updatePoints();
   }
 
   newBestVoteWinner(winner) {

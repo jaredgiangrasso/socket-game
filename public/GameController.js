@@ -28,7 +28,7 @@ class GameController extends EventEmitter {
     this._promptForm = document.getElementById('prompt-form');
     this._responseForm = document.getElementById('response-form');
     this._startButton = document.getElementById('start-button');
-    this._bestVoteButtons = document.querySelectorAll('.response-item-container .vote-button');
+    this._bestVoteButtons = document.querySelectorAll('.response-vote-list-item-container .vote-button');
     this._whoVoteButtons = document.querySelectorAll('.player-vote-item-container .vote-button');
 
     this.handleResponseSubmit = this.handleResponseSubmit.bind(this);
@@ -102,7 +102,7 @@ class GameController extends EventEmitter {
   hideBestVoteButtons() {
     // TODO: define this selector in constructor
 
-    const bestVoteButtons = document.querySelectorAll('.response-item-container .vote-button');
+    const bestVoteButtons = document.querySelectorAll('.response-vote-list-item-container .vote-button');
     [...bestVoteButtons].forEach((button) => {
       showById(button, false);
     });

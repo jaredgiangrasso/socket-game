@@ -26,7 +26,7 @@ body {
   width: 250px;
 }
 
-#player-list-item-container, #response-vote-list-item-container {
+.player-list-item-container, .response-vote-list-item-container {
   display: flex;
   justify-content: space-between;
 }

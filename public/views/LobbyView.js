@@ -35,7 +35,7 @@ class LobbyView extends EventEmitter {
       points.textContent = player.points;
 
       const container = document.createElement('div');
-      container.id = 'player-list-item-container';
+      container.classList.add('player-list-item-container');
       container.appendChild(name);
       container.appendChild(points);
 
