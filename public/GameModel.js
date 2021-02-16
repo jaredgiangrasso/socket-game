@@ -19,11 +19,22 @@ class GameModel extends EventEmitter {
     this._responses = [];
     this._roundNumber = null;
     this._started = false;
+    this._whoVoteWinners = [];
   }
 
   get bestVotes() { return this._bestVotes; }
 
+  get bestVoteWinner() { return this._bestVoteWinner; }
+
   get gamePhase() { return this._gamePhase; }
+
+  get myBestVote() { return this._myBestVote; }
+
+  set myBestVote(vote) { this._myBestVote = vote; }
+
+  get myId() { return this._myId; }
+
+  set myId(id) { this._myId = id; }
 
   get myPrompt() { return this._myPrompt; }
 
@@ -33,41 +44,37 @@ class GameModel extends EventEmitter {
 
   set myResponse(response) { this._myResponse = response; }
 
-  get myBestVote() { return this._myBestVote; }
-
-  set myBestVote(vote) { this._myBestVote = vote; }
-
   get myWhoVote() { return this._myWhoVote; }
 
   set myWhoVote(vote) { this._myWhoVote = vote; }
-
-  get roundNumber() { return this._roundNumber; }
-
-  set roundNumber(roundNumber) { this._roundNumber = roundNumber; }
 
   get playerCount() { return this._playerCount; }
 
   set playerCount(playerCount) { this._playerCount = playerCount; }
 
+  get players() { return this._players; }
+
+  set players(players) { this._players = players; }
+
+  get playerTurn() { return this._playerTurn; }
+
+  set playerTurn(playerTurn) { this._playerTurn = playerTurn; }
+
   get prompt() { return this._prompt; }
 
   set prompt(prompt) { this._prompt = prompt; }
 
-  get myId() { return this._myId; }
+  get roundNumber() { return this._roundNumber; }
 
-  set myId(id) { this._myId = id; }
-
-  get players() { return this._players; }
-
-  set players(players) { this._players = players; }
+  set roundNumber(roundNumber) { this._roundNumber = roundNumber; }
 
   get started() { return this._started; }
 
   set started(started) { this._started = started; }
 
-  get playerTurn() { return this._playerTurn; }
+  get whoVoteWinners() { return this._whoVoteWinners; }
 
-  set playerTurn(playerTurn) { this._playerTurn = playerTurn; }
+  set whoVoteWinners(winners) { this._whoVoteWinners = winners; }
 
   addPlayer(newPlayer, players, playerCount) {
     this._playerCount = playerCount;
@@ -107,9 +114,8 @@ class GameModel extends EventEmitter {
     this.emit('new responses', responses);
   }
 
-  newBestVotes(bestVotes, players) {
+  newBestVotes(bestVotes) {
     this._bestVotes = bestVotes;
-    this._players = players;
     this.emit('new best votes', bestVotes);
   }
 
@@ -124,6 +130,12 @@ class GameModel extends EventEmitter {
   updateBestVoteWinner(winner) {
     this._bestVoteWinner = winner;
     this.emit('new best vote winner', winner);
+  }
+
+  updateWhoVoteWinners(winners, players) {
+    this._whoVoteWinners = winners;
+    this._players = players;
+    this.emit('new who vote winners');
   }
 
   updateGamePhase(gamePhase) {

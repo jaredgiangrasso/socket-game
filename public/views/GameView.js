@@ -24,32 +24,37 @@ class GameView extends EventEmitter {
     this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
     this.newBestVotesUnlisten = this._model.on('new best votes', (bestVotes) => this.newBestVotes(bestVotes));
     this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', (winner) => this.newBestVoteWinner(winner));
+    this.newWhoVoteWinnersUnlisten = this._model.on('new who vote winners', () => this.newWhoVoteWinners());
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.bestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
   }
 
   _addPlayerVoteList() {
     Object.values(this._model.players).forEach(({ name, pid }) => {
-      const container = document.createElement('div');
-      container.classList.add('player-vote-list-item-container');
+      if (pid !== this._model.playerTurn) {
+        const container = document.createElement('div');
+        container.classList.add('player-vote-list-item-container');
 
-      const nameEl = document.createElement('span');
-      nameEl.classList.add('name');
-      nameEl.textContent = name;
+        const nameEl = document.createElement('span');
+        nameEl.classList.add('name');
+        nameEl.textContent = name;
 
-      const button = document.createElement('button');
-      button.classList.add('vote-button');
-      button.textContent = 'Vote';
-      button.addEventListener('click', this._controller.handleWhoVote.bind(this._controller), false);
+        const button = document.createElement('button');
+        button.classList.add('vote-button');
+        button.textContent = 'Vote';
+        button.addEventListener('click', this._controller.handleWhoVote.bind(this._controller), false);
 
-      container.appendChild(nameEl);
-      container.appendChild(button);
+        container.appendChild(nameEl);
+        if (pid !== this._model.myId || this._model.bestVoteWinner.pid !== this._model.myId) {
+          container.appendChild(button);
+        }
 
-      const li = document.createElement('li');
-      li.classList.add(pid);
-      li.appendChild(container);
+        const li = document.createElement('li');
+        li.classList.add(pid);
+        li.appendChild(container);
 
-      this._playerVoteList.appendChild(li);
+        this._playerVoteList.appendChild(li);
+      }
     });
   }
 
@@ -147,6 +152,12 @@ class GameView extends EventEmitter {
   newBestVoteWinner(winner) {
     this._bestVoteWinner.textContent = `Best Response: ${winner.response}`;
     this._addPlayerVoteList();
+  }
+
+  newWhoVoteWinners() {
+    const { players, whoVoteWinners } = this._model;
+
+    console.log(players, whoVoteWinners);
   }
 
   nextTurn() {

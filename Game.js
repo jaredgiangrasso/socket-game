@@ -9,6 +9,7 @@ class Game {
     this._bestVotes = {};
     this._bestVoteWinner = '';
     this._whoVotes = {};
+    this._whoVoteWinners = [];
   }
 
   get players() { return this._players; }
@@ -32,6 +33,14 @@ class Game {
   get bestVoteWinner() { return this._bestVoteWinner; }
 
   set bestVoteWinner(voteWinner) { this._bestVoteWinner = voteWinner; }
+
+  get whoVotes() { return this._whoVotes; }
+
+  set whoVotes(whoVotes) { this._whoVotes = whoVotes; }
+
+  get whoVoteWinners() { return this._whoVoteWinners; }
+
+  set whoVoteWinners(voteWinners) { this._whoVoteWinners = voteWinners; }
 
   addPlayer(data) {
     const existingPlayer = this.getPlayer(data.pid);
@@ -61,7 +70,15 @@ class Game {
 
   nextRound() {
     this._roundNumber += 1;
+    this._whoVoteWinners = [];
+    this._bestVoteWinner = '';
+
     this._bestVotes[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
+      ...accu,
+      [curr]: 0,
+    }), {});
+
+    this._whoVotes[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
       ...accu,
       [curr]: 0,
     }), {});
