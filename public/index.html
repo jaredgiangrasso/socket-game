@@ -1,61 +1,89 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>Socket.IO chat</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+  <title>Socket.IO chat</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="index.css" media="screen" />
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/EventEmitter.js" type="module"></script>
-    <script src="/GameModel.js" type="module"></script>
-    <script src="/views/GameView.js" type="module"></script>
-    <script src="/views/LobbyView.js" type="module"></script>
-    <script src="/GameController.js" type="module"></script>
-    <script src="/index.js" type="module"></script>
-  </head>
-  <body>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="index.css" media="screen" />
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/EventEmitter.js" type="module"></script>
+  <script src="/GameModel.js" type="module"></script>
+  <script src="/views/GameView.js" type="module"></script>
+  <script src="/views/LobbyView.js" type="module"></script>
+  <script src="/GameController.js" type="module"></script>
+  <script src="/index.js" type="module"></script>
+</head>
+
+<body>
+  <div id="game-header" class="p-2 mt-2 mb-2 border-bottom">
+    <h1>
+      <a class="game-title" href="http://localhost:3000/">Insert Game Title Here</a>
+    </h1>
+  </div>
+
+  <div class="container-fluid">
     <div id="login">
-      <form id="login-form">
-        <ul>
-         <li>
-           <label for="name">Name:</label>
-           <input type="text" id="name" name="name">
-         </li>
-         <li>
-           <label for="color">Color:</label>
-           <input type="color" id="color" name="color">
-         </li>
-         <li>
-           <button type="submit">Play</button>
-         </li>
-        </ul>
-       </form>
-    </div>
-
-    <div id="in-progress">A game is currently in progress</div>
-    
-    <div id="lobby">
-      <div>
-        <h1>
-          <span>Player Count:</span> 
-          <span id="player-count">0</span>
+      <div class="row justify-content-center mb-5 mt-5">
+        <h1 class="text-center">
+          <a class="game-title" href="http://localhost:3000/">Insert Game Title Here</a>
         </h1>
       </div>
-      <div id="player-list-wrapper">
-        <h1>Players</h1>
-        <ul id="player-list"></ul>
-      </div>
-      <div id="start-button-wrapper">
-        <button id="start-button">Start</button>
+
+      <div class="row justify-content-center">
+        <div class="col-6">
+          <form id="login-form">
+            <div class="mb-4">
+              <label for="name" class="form-label">Name:</label>
+              <input type="text" id="name" name="name" class="form-control">
+            </div>
+            <div class="mb-5">
+              <label for="color" class="form-label">Color:</label>
+              <input type="color" id="color" name="color" class="form-control">
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Host a Game</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-    
+
+    <h1 id="in-progress">A game is currently in progress</h1>
+
+    <div id="lobby">
+
+      <div class="container">
+        <div class="row justify-content-center mb-5 mt-5">
+          <h1 class="text-center">Players</h1>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-6">
+            <table id="lobby-player-list" class="table table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                </tr>
+              </thead>
+              <tbody id="player-list"></tbody>
+            </table>
+
+            <div id="start-button-wrapper" class="d-grid">
+              <button id="start-button" class="btn btn-primary">Start Game</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="game">
       <div>
         <h1>
-          <span>Round:</span> 
+          <span>Round:</span>
           <span id="round-number">0</span>
         </h1>
       </div>
@@ -68,6 +96,17 @@
           <input id="prompt-input" name="prompt" type="text">
         </form>
       </div>
+
+      <table id="game-player-list" class="table table-borderless">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Points</th>
+          </tr>
+        </thead>
+        <tbody id="player-list"></tbody>
+      </table>
+
       <div id="response">
         <form id="response-form" onsubmit="return false">
           <input id="response-input" name="response" type="text">
@@ -80,7 +119,11 @@
         <ul id="player-vote-list"></ul>
       </div>
     </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
-  </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+    crossorigin="anonymous"></script>
+</body>
+
 </html>

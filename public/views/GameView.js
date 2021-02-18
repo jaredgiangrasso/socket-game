@@ -1,4 +1,4 @@
-import { showById } from '../helpers.js';
+import { showById, addPlayerListItem, removePlayerListItem } from '../helpers.js';
 import EventEmitter from '../EventEmitter.js';
 
 class GameView extends EventEmitter {
@@ -9,6 +9,7 @@ class GameView extends EventEmitter {
 
     this._bestVotes = document.getElementsByClassName('best-votes');
     this._bestVoteWinner = document.getElementById('best-vote-winner');
+    this._gamePlayerList = document.getElementById('game-player-list');
     this._playerVoteList = document.getElementById('player-vote-list');
     this._prompt = document.getElementById('prompt');
     this._promptForm = document.getElementById('prompt-form');
@@ -20,13 +21,15 @@ class GameView extends EventEmitter {
     this._timer = document.getElementById('timer');
     this._waitPrompt = document.getElementById('wait-prompt');
 
+    this.bestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
     this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
     this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
     this.newBestVotesUnlisten = this._model.on('new best votes', (bestVotes) => this.newBestVotes(bestVotes));
     this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', (winner) => this.newBestVoteWinner(winner));
     this.newWhoVoteWinnersUnlisten = this._model.on('new who vote winners', () => this.newWhoVoteWinners());
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
-    this.bestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
+    this.removePlayerUnlisten = this._model.on('remove player', () => this.removePlayer());
+    this.startGameUnlisten = this._model.on('start game', () => this.startGame());
   }
 
   _addPlayerVoteList() {
@@ -93,7 +96,7 @@ class GameView extends EventEmitter {
   }
 
   bestVoteRequested() {
-    this._setTimer(3);
+    this._setTimer(10);
     // showById(this._responseVoteListWrapper, false);
   }
 
@@ -104,7 +107,7 @@ class GameView extends EventEmitter {
       showById(this._response, true);
     }
 
-    await this._setTimer(2);
+    await this._setTimer(10);
   }
 
   // TODO: use document fragment for better performance
@@ -142,7 +145,7 @@ class GameView extends EventEmitter {
       }
     });
 
-    await this._setTimer(3);
+    await this._setTimer(10);
   }
 
   async newBestVotes() {
@@ -167,7 +170,15 @@ class GameView extends EventEmitter {
       showById(this._waitPrompt, true);
     }
 
-    this._setTimer(2);
+    this._setTimer(10);
+  }
+
+  removePlayer() {
+    removePlayerListItem(this._gamePlayerList, this._model.players);
+  }
+
+  startGame() {
+    addPlayerListItem(this._gamePlayerList, this._model.players, true);
   }
 }
 

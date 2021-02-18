@@ -4,17 +4,17 @@
 }
 
 body { 
-  font: 13px Helvetica, Arial; 
-  background: url(pattern.png);
-  background-size: 150%;
+  /* font: 13px Helvetica, Arial;  */
+  /* background: url(pattern.png); */
+  /* background-size: 150%; */
 }
 
 #lobby, #game, #in-progress, #prompt, #response {
   display: none;
 }
 
-.current-turn .name {
-  background: red;
+.current-turn {
+  background: #F1D997;
 }
 
 #prompt-title {
@@ -22,13 +22,18 @@ body {
   font-size: 50px;
 }
 
-#player-list-wrapper, #response-vote-list-wrapper, #player-vote-list {
-  width: 250px;
-}
-
-.player-list-item-container, .response-vote-list-item-container, .player-vote-list-item-container {
+.response-vote-list-item-container, .player-vote-list-item-container {
   display: flex;
   justify-content: space-between;
+}
+
+.game-title {
+  color: black;
+  text-decoration: none;
+}
+
+#game-header {
+  display: none;
 }
 
 /* off-white: #F5F3F3, dull-yellow: #F1D997 */

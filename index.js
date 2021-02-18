@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
   socket.on('game start', async () => {
     game.started = true;
     game.nextRound();
-    const WAIT_TIME = 3000;
+    const WAIT_TIME = 10000;
 
     const randomPlayer = game.getRandomPlayer();
     game.playerTurn = randomPlayer.pid;
