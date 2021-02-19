@@ -9,28 +9,28 @@ export const showById = (element, show, displayValue = 'block') => {
 };
 
 export const addPlayerListItem = (playerList, players, showPoints) => {
-  const playerListTable = playerList.querySelector('tbody');
-
   Object.values(players).forEach((player) => {
-    const playerListIds = [...playerListTable.childNodes].map((player) => player.getAttribute('data-id'));
+    const playerListIds = [...playerList.childNodes].map((player) => player.getAttribute('data-id'));
     if (!playerListIds.includes(player.pid)) {
-      const tableRow = document.createElement('tr');
-      const name = document.createElement('th');
-      const points = document.createElement('td');
+      const listItem = document.createElement('li');
+      listItem.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between');
+
+      const name = document.createElement('span');
 
       name.classList.add('name');
       name.textContent = player.name;
 
-      tableRow.setAttribute('data-id', player.pid);
-      tableRow.appendChild(name);
+      listItem.setAttribute('data-id', player.pid);
+      listItem.appendChild(name);
 
       if (showPoints) {
+        const points = document.createElement('span');
         points.classList.add('points');
         points.textContent = player.points;
-        tableRow.appendChild(points);
+        listItem.appendChild(points);
       }
 
-      playerListTable.appendChild(tableRow);
+      playerList.appendChild(listItem);
     }
   });
 };

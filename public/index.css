@@ -4,27 +4,17 @@
 }
 
 body { 
-  /* font: 13px Helvetica, Arial;  */
-  /* background: url(pattern.png); */
-  /* background-size: 150%; */
+  font: 13px Helvetica, Arial;
+  background: url(pattern.png);
+  background-size: 150%;
 }
 
-#lobby, #game, #in-progress, #prompt, #response {
+#lobby, #game, #in-progress, #prompt, #response, #response-vote-list {
   display: none;
 }
 
 .current-turn {
   background: #F1D997;
-}
-
-#prompt-title {
-  text-align: center;
-  font-size: 50px;
-}
-
-.response-vote-list-item-container, .player-vote-list-item-container {
-  display: flex;
-  justify-content: space-between;
 }
 
 .game-title {
@@ -34,6 +24,11 @@ body {
 
 #game-header {
   display: none;
+}
+
+/* Without this table/button override, the button inherits the background color of the table */
+.table .btn-primary {
+  background-color: #0d6efd;
 }
 
 /* off-white: #F5F3F3, dull-yellow: #F1D997 */

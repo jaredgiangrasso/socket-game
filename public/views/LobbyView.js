@@ -51,7 +51,7 @@ class LobbyView extends EventEmitter {
   }
 
   _updateRoundNumber() {
-    this._roundNumber.textContent = this._model.roundNumber;
+    this._roundNumber.textContent = `Round: ${this._model.roundNumber}`;
   }
 
   addPlayer() {

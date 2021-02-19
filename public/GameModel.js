@@ -129,7 +129,7 @@ class GameModel extends EventEmitter {
 
   updateBestVoteWinner(winner) {
     this._bestVoteWinner = winner;
-    this.emit('new best vote winner', winner);
+    this.emit('new best vote winner');
   }
 
   updateWhoVoteWinners(winners, players) {

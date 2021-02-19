@@ -14,10 +14,6 @@ const handleLoginSubmit = (e) => {
   }
 };
 
-const handleStart = () => {
-  socket.emit('game start');
-};
-
 class GameController extends EventEmitter {
   constructor(model) {
     super();
@@ -29,10 +25,12 @@ class GameController extends EventEmitter {
     this._responseForm = document.getElementById('response-form');
     this._startButton = document.getElementById('start-button');
     this._bestVoteButtons = document.querySelectorAll('.response-vote-list-item-container .vote-button');
+    this._gameHelp = document.getElementById('game-help');
     this._whoVoteButtons = document.querySelectorAll('.player-vote-item-container .vote-button');
 
     this.handleResponseSubmit = this.handleResponseSubmit.bind(this);
     this.handlePromptSubmit = this.handlePromptSubmit.bind(this);
+    this.handleStart = this.handleStart.bind(this);
 
     this.addPromptRequestedUnlisten = this._model.on('prompt requested', () => this.submitPrompt());
     this.addResponseRequestedUnlisten = this._model.on('response requested', () => this.submitResponse());
@@ -42,7 +40,7 @@ class GameController extends EventEmitter {
     this._loginForm.addEventListener('submit', handleLoginSubmit, false);
     this._promptForm.addEventListener('submit', this.handlePromptSubmit, false);
     this._responseForm.addEventListener('submit', this.handleResponseSubmit, false);
-    this._startButton.addEventListener('click', handleStart, false);
+    this._startButton.addEventListener('click', this.handleStart, false);
   }
 
   handlePromptSubmit(e) {
@@ -60,6 +58,7 @@ class GameController extends EventEmitter {
     // or the current value of the input.
     if (gamePhase !== 'prompt requested') {
       this._model.myPrompt = prompt;
+      this._gameHelp.textContent = 'Prompt submitted';
     } else {
       const promptData = myPrompt || prompt;
       socket.emit('new prompt', promptData);
@@ -79,6 +78,7 @@ class GameController extends EventEmitter {
     // See notes on handleSubmitPrompt
     if (gamePhase !== 'response requested') {
       this._model.myResponse = response;
+      this._gameHelp.textContent = 'Response submitted';
     } else {
       const responseData = myResponse || response;
       socket.emit('new response', { value: responseData, pid: this._model.myId });
@@ -88,13 +88,20 @@ class GameController extends EventEmitter {
     return false;
   }
 
+  handleStart() {
+    if (Object.keys(this._model.players).length > 1) {
+      socket.emit('game start');
+    }
+  }
+
   handleBestVote(e) {
     e.preventDefault();
     const listItem = e.target.parentElement.parentElement;
-    const pid = listItem.className;
+    const pid = listItem.getAttribute('data-id');
 
     this._model.myBestVote = pid;
     this.hideBestVoteButtons();
+    this._gameHelp.textContent = 'Vote submitted';
 
     return false;
   }
@@ -102,8 +109,7 @@ class GameController extends EventEmitter {
   handleWhoVote(e) {
     e.preventDefault();
     const listItem = e.target.parentElement.parentElement;
-    // TODO: I don't think I should be using classname to store data
-    const pid = listItem.className;
+    const pid = listItem.getAttribute('data-id');
 
     this._model.myWhoVote = pid;
     this.hideWhoVoteButtons();
