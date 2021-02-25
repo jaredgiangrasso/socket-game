@@ -97,9 +97,9 @@ class GameController extends EventEmitter {
   handleBestVote(e) {
     e.preventDefault();
     const listItem = e.target.parentElement.parentElement;
-    const pid = listItem.getAttribute('data-id');
+    const votePid = listItem.getAttribute('data-id');
 
-    this._model.myBestVote = pid;
+    this._model.myBestVote = votePid;
     this.hideBestVoteButtons();
     this._gameHelp.textContent = 'Vote submitted';
 
@@ -109,9 +109,9 @@ class GameController extends EventEmitter {
   handleWhoVote(e) {
     e.preventDefault();
     const listItem = e.target.parentElement.parentElement;
-    const pid = listItem.getAttribute('data-id');
+    const votePid = listItem.getAttribute('data-id');
 
-    this._model.myWhoVote = pid;
+    this._model.myWhoVote = votePid;
     this.hideWhoVoteButtons();
 
     return false;

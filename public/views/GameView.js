@@ -33,8 +33,9 @@ class GameView extends EventEmitter {
   _addPlayerVoteList() {
     Object.values(this._model.players).forEach(({ name, pid }) => {
       if (pid !== this._model.playerTurn) {
-        const container = document.createElement('div');
-        container.classList.add('player-vote-list-item-container');
+        const li = document.createElement('li');
+        li.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between');
+        li.setAttribute('data-id', pid);
 
         const nameEl = document.createElement('span');
         nameEl.classList.add('name');
@@ -45,15 +46,10 @@ class GameView extends EventEmitter {
         button.textContent = 'Vote';
         button.addEventListener('click', this._controller.handleWhoVote.bind(this._controller), false);
 
-        container.appendChild(nameEl);
+        li.appendChild(nameEl);
         if (pid !== this._model.myId || this._model.bestVoteWinner.pid !== this._model.myId) {
-          container.appendChild(button);
+          li.appendChild(button);
         }
-
-        const li = document.createElement('li');
-        li.setAttribute('data-id', pid);
-        li.classList.add('list-group-item');
-        li.appendChild(container);
 
         this._playerVoteList.appendChild(li);
       }
@@ -88,6 +84,13 @@ class GameView extends EventEmitter {
     });
   }
 
+  _updateBestVoteWinner() {
+    const { bestVoteWinner } = this._model;
+
+    const bestResponse = this._responseVoteList.querySelector(`[data-id="${bestVoteWinner.pid}"]`);
+    bestResponse.classList.add('bg-warning');
+  }
+
   _updateTimer(seconds) {
     const timer = this._timer;
     if (seconds < 0) timer.textContent = '';
@@ -95,7 +98,7 @@ class GameView extends EventEmitter {
   }
 
   bestVoteRequested() {
-    this._setTimer(10);
+    this._setTimer(3);
     // showById(this._responseVoteList, false);
   }
 
@@ -109,7 +112,7 @@ class GameView extends EventEmitter {
       this._gameHelp.textContent = 'Players are writing their responses...';
     }
 
-    await this._setTimer(10);
+    await this._setTimer(3);
   }
 
   // TODO: use document fragment for better performance
@@ -127,7 +130,6 @@ class GameView extends EventEmitter {
 
           const responseCell = document.createElement('span');
           const votesCell = document.createElement('span');
-          const voteButtonCell = document.createElement('span');
 
           responseCell.classList.add('response');
           responseCell.textContent = response.value;
@@ -135,17 +137,20 @@ class GameView extends EventEmitter {
           votesCell.classList.add('best-votes');
           votesCell.textContent = '0';
 
-          const button = document.createElement('button');
-          button.classList.add('vote-button', 'btn', 'btn-primary');
-          button.textContent = 'Vote';
-          button.addEventListener('click', this._controller.handleBestVote.bind(this._controller), false);
-          voteButtonCell.appendChild(button);
-
           listItem.classList.add('response-vote-list-item-container');
           listItem.setAttribute('data-id', response.pid);
           listItem.appendChild(responseCell);
           listItem.appendChild(votesCell);
-          listItem.appendChild(voteButtonCell);
+
+          if (this._model.myId !== response.pid) {
+            const voteButtonCell = document.createElement('span');
+            const button = document.createElement('button');
+            button.classList.add('vote-button', 'btn', 'btn-primary');
+            button.textContent = 'Vote';
+            button.addEventListener('click', this._controller.handleBestVote.bind(this._controller), false);
+            voteButtonCell.appendChild(button);
+            listItem.appendChild(voteButtonCell);
+          }
 
           this._responseVoteList.appendChild(listItem);
         }
@@ -161,6 +166,7 @@ class GameView extends EventEmitter {
 
   newBestVoteWinner() {
     this._addPlayerVoteList();
+    this._updateBestVoteWinner();
   }
 
   newWhoVoteWinners() {
@@ -182,7 +188,7 @@ class GameView extends EventEmitter {
       showById(this._gameHelp, true);
     }
 
-    this._setTimer(10);
+    this._setTimer(3);
   }
 
   removePlayer() {

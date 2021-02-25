@@ -44,11 +44,11 @@ io.on('connection', (socket) => {
     game.playerTurn = randomPlayer.pid;
     io.sockets.emit('next turn', randomPlayer);
 
-    await sleep(WAIT_TIME);
+    await sleep(3000);
     io.sockets.emit('request prompt');
-    await sleep(WAIT_TIME);
+    await sleep(3000);
     io.sockets.emit('request response');
-    await sleep(WAIT_TIME);
+    await sleep(10000);
     io.sockets.emit('request best vote');
     await sleep(500);
     io.sockets.emit('update best vote winner', game.bestVoteWinner);
@@ -68,16 +68,16 @@ io.on('connection', (socket) => {
   socket.on('new response', (response) => {
     const { value, pid: responsePid } = response;
     const {
-      roundNumber, responses, players, playerTurn,
+      roundNumber, responses,
     } = game;
 
     responses[roundNumber][responsePid] = value;
 
-    const responsesResponse = Object.keys(players)
-      .filter((id) => id !== playerTurn)
-      .map((id) => ({
-        pid: id,
-        value: responses[roundNumber][id],
+    const responsesResponse = Object.entries(responses[roundNumber])
+      .filter(([resPid, responseValue]) => responseValue !== '')
+      .map(([resPid, responseValue]) => ({
+        pid: resPid,
+        value: responseValue,
       }));
 
     io.sockets.emit('new responses', responsesResponse);
@@ -104,6 +104,7 @@ io.on('connection', (socket) => {
       return accu;
       // TODO: What if no one has voted?
     }, { pid: '', points: -Infinity });
+
     game.bestVoteWinner = currentBestVoteWinner;
   });
 

@@ -5,7 +5,7 @@ class GameModel extends EventEmitter {
     super();
 
     this._bestVotes = {};
-    this._bestVoteWinner = '';
+    this._bestVoteWinner = {};
     this._gamePhase = '';
     this._myBestVote = '';
     this._myId = null;
