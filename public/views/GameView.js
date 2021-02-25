@@ -87,6 +87,7 @@ class GameView extends EventEmitter {
   _updateBestVoteWinner() {
     const { bestVoteWinner } = this._model;
 
+    console.log(bestVoteWinner);
     const bestResponse = this._responseVoteList.querySelector(`[data-id="${bestVoteWinner.pid}"]`);
     bestResponse.classList.add('bg-warning');
   }
@@ -129,27 +130,30 @@ class GameView extends EventEmitter {
           listItem.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between');
 
           const responseCell = document.createElement('span');
+          responseCell.classList.add('flex-fill');
           const votesCell = document.createElement('span');
+          votesCell.classList.add('flex-fill', 'text-center');
+          const voteButtonCell = document.createElement('div');
+          voteButtonCell.classList.add('flex-fill', 'd-flex', 'justify-content-end');
 
           responseCell.classList.add('response');
           responseCell.textContent = response.value;
 
           votesCell.classList.add('best-votes');
-          votesCell.textContent = '0';
+          votesCell.textContent = '0 votes';
 
           listItem.classList.add('response-vote-list-item-container');
           listItem.setAttribute('data-id', response.pid);
           listItem.appendChild(responseCell);
           listItem.appendChild(votesCell);
+          listItem.appendChild(voteButtonCell);
 
           if (this._model.myId !== response.pid) {
-            const voteButtonCell = document.createElement('span');
             const button = document.createElement('button');
             button.classList.add('vote-button', 'btn', 'btn-primary');
             button.textContent = 'Vote';
             button.addEventListener('click', this._controller.handleBestVote.bind(this._controller), false);
             voteButtonCell.appendChild(button);
-            listItem.appendChild(voteButtonCell);
           }
 
           this._responseVoteList.appendChild(listItem);

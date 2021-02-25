@@ -6,7 +6,12 @@
 body { 
   font: 13px Helvetica, Arial;
   background: url(pattern.png);
-  background-size: 150%;
+  background-size: 1200px auto;
+  background-repeat: repeat;
+}
+
+li {
+  min-height: 55px;
 }
 
 #lobby, #game, #in-progress, #prompt, #response, #response-vote-list {
