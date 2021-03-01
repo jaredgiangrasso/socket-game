@@ -32,26 +32,38 @@ class GameView extends EventEmitter {
 
   _addPlayerVoteList() {
     Object.values(this._model.players).forEach(({ name, pid }) => {
-      if (pid !== this._model.playerTurn) {
-        const li = document.createElement('li');
-        li.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between');
-        li.setAttribute('data-id', pid);
+      if (
+        pid !== this._model.playerTurn
+        && pid !== this._model.myId
+        && this._model.bestVoteWinner.pid !== this._model.myId
+      ) {
+        const listItem = document.createElement('li');
+        listItem.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between', 'player-vote-list-item-container');
 
-        const nameEl = document.createElement('span');
-        nameEl.classList.add('name');
-        nameEl.textContent = name;
+        const nameCell = document.createElement('span');
+        nameCell.classList.add('flex-fill');
+        const votesCell = document.createElement('span');
+        votesCell.classList.add('flex-fill', 'text-center');
+        const voteButtonCell = document.createElement('div');
+        voteButtonCell.classList.add('flex-fill', 'd-flex', 'justify-content-end');
+
+        nameCell.classList.add('name');
+        nameCell.textContent = name;
+
+        votesCell.classList.add('who-votes');
 
         const button = document.createElement('button');
         button.classList.add('vote-button', 'btn', 'btn-primary');
         button.textContent = 'Vote';
         button.addEventListener('click', this._controller.handleWhoVote.bind(this._controller), false);
+        voteButtonCell.appendChild(button);
 
-        li.appendChild(nameEl);
-        if (pid !== this._model.myId || this._model.bestVoteWinner.pid !== this._model.myId) {
-          li.appendChild(button);
-        }
+        listItem.setAttribute('data-id', pid);
+        listItem.appendChild(nameCell);
+        listItem.appendChild(votesCell);
+        listItem.appendChild(voteButtonCell);
 
-        this._playerVoteList.appendChild(li);
+        this._playerVoteList.appendChild(listItem);
       }
     });
   }
@@ -115,7 +127,7 @@ class GameView extends EventEmitter {
 
         if (!existingListItem) {
           const listItem = document.createElement('li');
-          listItem.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between');
+          listItem.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between', 'response-vote-list-item-container');
 
           const responseCell = document.createElement('span');
           responseCell.classList.add('flex-fill');
@@ -128,9 +140,7 @@ class GameView extends EventEmitter {
           responseCell.textContent = response.value;
 
           votesCell.classList.add('best-votes');
-          votesCell.textContent = '0 votes';
 
-          listItem.classList.add('response-vote-list-item-container');
           listItem.setAttribute('data-id', response.pid);
           listItem.appendChild(responseCell);
           listItem.appendChild(votesCell);
@@ -153,6 +163,9 @@ class GameView extends EventEmitter {
   }
 
   newBestVoteWinner() {
+    // TODO: add text for player whose turn it is
+    this._gameHelp.textContent = 'Vote for the player you believe wrote the winning response';
+
     this._addPlayerVoteList();
     this._updateBestVoteWinner();
   }

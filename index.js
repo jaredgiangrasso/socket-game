@@ -52,10 +52,10 @@ io.on('connection', (socket) => {
     io.sockets.emit('request best vote');
     await sleep(500);
     io.sockets.emit('update best vote winner', { winner: game.bestVoteWinner, bestVotes: game.bestVotes });
-    await sleep(WAIT_TIME);
+    await sleep(3000);
     io.sockets.emit('request who vote');
     await sleep(500);
-    io.sockets.emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, players: game.players });
+    io.sockets.emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, whoVotes: game.whoVotes, players: game.players });
     await sleep(WAIT_TIME + 2000);
   });
 
@@ -116,7 +116,7 @@ io.on('connection', (socket) => {
     if (value) {
       if (value === bestVoteWinner.pid) {
         players[value].points += WHO_VOTE_POINTS;
-        whoVotes[roundNumber][votePid] = value;
+        whoVotes[roundNumber][value] += 1;
         whoVoteWinners.push(votePid);
       }
     }
