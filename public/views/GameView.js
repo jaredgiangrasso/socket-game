@@ -22,12 +22,12 @@ class GameView extends EventEmitter {
     this.bestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
     this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
     this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
-    this.newBestVotesUnlisten = this._model.on('new best votes', (bestVotes) => this.newBestVotes(bestVotes));
     this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', () => this.newBestVoteWinner());
     this.newWhoVoteWinnersUnlisten = this._model.on('new who vote winners', () => this.newWhoVoteWinners());
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.removePlayerUnlisten = this._model.on('remove player', () => this.removePlayer());
     this.startGameUnlisten = this._model.on('start game', () => this.startGame());
+    this.updateBestVotesUnlisten = this._model.on('update best votes', () => this.updateBestVotes());
   }
 
   _addPlayerVoteList() {
@@ -70,17 +70,6 @@ class GameView extends EventEmitter {
           clearInterval(int);
         }
       }, 1000);
-    });
-  }
-
-  _updateBestVotes() {
-    const { bestVotes, roundNumber } = this._model;
-
-    [...this._bestVotes].forEach((vote) => {
-      const playerListItem = vote.parentElement.parentElement;
-      // TODO: I don't think I should be using className to store this data
-      const voteCount = bestVotes[roundNumber][playerListItem.className];
-      vote.textContent = voteCount;
     });
   }
 
@@ -160,11 +149,7 @@ class GameView extends EventEmitter {
       }
     });
 
-    await this._setTimer(10);
-  }
-
-  async newBestVotes() {
-    this._updateBestVotes();
+    await this._setTimer(3);
   }
 
   newBestVoteWinner() {
@@ -200,6 +185,18 @@ class GameView extends EventEmitter {
 
   startGame() {
     addPlayerListItem(this._gamePlayerList, this._model.players, true);
+  }
+
+  updateBestVotes() {
+    const { bestVotes, roundNumber } = this._model;
+
+    [...this._bestVotes].forEach((vote) => {
+      const playerListItem = vote.parentElement;
+      const playerListItemId = playerListItem.getAttribute('data-id');
+
+      const voteCount = bestVotes[roundNumber][playerListItemId];
+      vote.textContent = `${voteCount} ${voteCount === 1 ? 'vote' : 'votes'}`;
+    });
   }
 }
 

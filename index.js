@@ -48,10 +48,10 @@ io.on('connection', (socket) => {
     io.sockets.emit('request prompt');
     await sleep(3000);
     io.sockets.emit('request response');
-    await sleep(10000);
+    await sleep(3000);
     io.sockets.emit('request best vote');
     await sleep(500);
-    io.sockets.emit('update best vote winner', game.bestVoteWinner);
+    io.sockets.emit('update best vote winner', { winner: game.bestVoteWinner, bestVotes: game.bestVotes });
     await sleep(WAIT_TIME);
     io.sockets.emit('request who vote');
     await sleep(500);
@@ -92,7 +92,6 @@ io.on('connection', (socket) => {
     if (value) {
       players[value].points += BEST_VOTE_POINTS;
       bestVotes[roundNumber][value] += 1;
-      io.sockets.emit('new best votes', bestVotes);
     }
 
     const currentBestVoteWinner = Object.entries(bestVotes[roundNumber]).reduce((accu, curr) => {
