@@ -87,7 +87,6 @@ class GameView extends EventEmitter {
   _updateBestVoteWinner() {
     const { bestVoteWinner } = this._model;
 
-    console.log(bestVoteWinner);
     const bestResponse = this._responseVoteList.querySelector(`[data-id="${bestVoteWinner.pid}"]`);
     bestResponse.classList.add('bg-warning');
   }

@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
   socket.on('new best vote', (vote) => {
     const { value } = vote;
     const {
-      roundNumber, bestVotes, players, responses,
+      roundNumber, bestVotes, players,
     } = game;
 
     if (value) {
@@ -96,14 +96,14 @@ io.on('connection', (socket) => {
     }
 
     const currentBestVoteWinner = Object.entries(bestVotes[roundNumber]).reduce((accu, curr) => {
-      const [currPid, points] = curr;
+      const [currPid, votes] = curr;
 
-      if (points > accu.points) {
-        return { pid: currPid, response: responses[roundNumber][currPid] };
+      if (votes > accu.votes) {
+        return { pid: currPid, votes };
       }
       return accu;
       // TODO: What if no one has voted?
-    }, { pid: '', points: -Infinity });
+    }, { pid: '', votes: -Infinity });
 
     game.bestVoteWinner = currentBestVoteWinner;
   });
