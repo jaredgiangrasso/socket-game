@@ -22,7 +22,7 @@ class GameView extends EventEmitter {
     this.bestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
     this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
     this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
-    this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', () => this.newBestVoteWinner());
+    this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', (winner) => this.newBestVoteWinner(winner));
     this.newWhoVoteWinnersUnlisten = this._model.on('new who vote winners', () => this.newWhoVoteWinners());
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.removePlayerUnlisten = this._model.on('remove player', () => this.removePlayer());
@@ -162,9 +162,12 @@ class GameView extends EventEmitter {
     await this._setTimer(3);
   }
 
-  newBestVoteWinner() {
-    // TODO: add text for player whose turn it is
-    this._gameHelp.textContent = 'Vote for the player you believe wrote the winning response';
+  newBestVoteWinner(winner) {
+    if (this._model.myId === winner.pid) {
+      this._gameHelp.textContent = 'Players are voting for who they believe wrote the winning response';
+    } else {
+      this._gameHelp.textContent = 'Vote for the player you believe wrote the winning response';
+    }
 
     this._addPlayerVoteList();
     this._updateBestVoteWinner();
