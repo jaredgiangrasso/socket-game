@@ -22,7 +22,7 @@ class GameView extends EventEmitter {
     this.bestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
     this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
     this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
-    this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', (winner) => this.newBestVoteWinner(winner));
+    this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', () => this.newBestVoteWinner());
     this.newWhoVoteWinnersUnlisten = this._model.on('new who vote winners', () => this.newWhoVoteWinners());
     this.nextTurnUnlisten = this._model.on('next turn', (player) => this.nextTurn(player));
     this.removePlayerUnlisten = this._model.on('remove player', () => this.removePlayer());
@@ -98,6 +98,20 @@ class GameView extends EventEmitter {
     else timer.textContent = `${seconds} ${seconds === 1 ? 'second' : 'seconds'} remaining`;
   }
 
+  _updatePoints() {
+    const { players } = this._model;
+
+    const playerListItems = document.querySelectorAll('#game-player-list li');
+    [...playerListItems].forEach((player) => {
+      console.log(players, player);
+      const currentPlayerId = player.getAttribute('data-id');
+      const { points } = players[currentPlayerId];
+
+      const pointsElement = document.querySelector(`#game-player-list #${currentPlayerId} .points`);
+      pointsElement.textContent = `${points} ${points === 1 ? 'point' : 'points'}`;
+    });
+  }
+
   bestVoteRequested() {
     this._setTimer(3);
     // showById(this._responseVoteList, false);
@@ -162,8 +176,10 @@ class GameView extends EventEmitter {
     await this._setTimer(3);
   }
 
-  newBestVoteWinner(winner) {
-    if (this._model.myId === winner.pid) {
+  newBestVoteWinner() {
+    const { bestVoteWinner } = this._model;
+
+    if (this._model.myId === bestVoteWinner.pid) {
       this._gameHelp.textContent = 'Players are voting for who they believe wrote the winning response';
     } else {
       this._gameHelp.textContent = 'Vote for the player you believe wrote the winning response';
@@ -176,7 +192,8 @@ class GameView extends EventEmitter {
   newWhoVoteWinners() {
     const { players, whoVoteWinners } = this._model;
 
-    console.log(players, whoVoteWinners);
+    this._updatePoints();
+    console.log(whoVoteWinners);
   }
 
   nextTurn() {

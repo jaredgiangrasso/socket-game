@@ -18,6 +18,14 @@ li {
   display: none;
 }
 
+#overlay {
+  background: rgba(0, 0, 0, .5);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 50;
+}
+
 .current-turn {
   background: #F1D997;
 }
