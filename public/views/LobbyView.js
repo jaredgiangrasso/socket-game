@@ -66,7 +66,7 @@ class LobbyView extends EventEmitter {
   startGame() {
     this._updateRoundNumber();
     showById(this._lobby, false);
-    showById(this._game, true);
+    showById(this._game, true, 'flex');
   }
 }
 
