@@ -8,7 +8,9 @@ class GameView extends EventEmitter {
     this._controller = controller;
 
     this._bestVotes = document.getElementsByClassName('best-votes');
+    this._bestVoteWinner = document.getElementById('best-vote-winner');
     this._gamePlayerList = document.getElementById('game-player-list');
+    this._overlay = document.getElementById('overlay');
     this._playerVoteList = document.getElementById('player-vote-list');
     this._prompt = document.getElementById('prompt');
     this._promptForm = document.getElementById('prompt-form');
@@ -103,11 +105,10 @@ class GameView extends EventEmitter {
 
     const playerListItems = document.querySelectorAll('#game-player-list li');
     [...playerListItems].forEach((player) => {
-      console.log(players, player);
       const currentPlayerId = player.getAttribute('data-id');
       const { points } = players[currentPlayerId];
 
-      const pointsElement = document.querySelector(`#game-player-list #${currentPlayerId} .points`);
+      const pointsElement = player.querySelector('.points');
       pointsElement.textContent = `${points} ${points === 1 ? 'point' : 'points'}`;
     });
   }
@@ -190,10 +191,13 @@ class GameView extends EventEmitter {
   }
 
   newWhoVoteWinners() {
-    const { players, whoVoteWinners } = this._model;
+    const { players, whoVoteWinners, bestVoteWinner } = this._model;
 
+    const bestVoteWinnerName = players[bestVoteWinner.pid].name;
+    console.log(players);
+    showById(this._overlay, true, 'flex');
+    this._bestVoteWinner.textContent = `The winning prompt was written by ${bestVoteWinnerName}!`;
     this._updatePoints();
-    console.log(whoVoteWinners);
   }
 
   nextTurn() {
