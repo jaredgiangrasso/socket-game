@@ -52,8 +52,8 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       model.updateBestVotes(bestVotes);
     });
 
-    socket.on('update who vote winners', ({ whoVoteWinners, whoVotes, players }) => {
-      model.updateWhoVoteWinners(whoVoteWinners, players);
+    socket.on('update who vote winners', ({ whoVoteWinners, points }) => {
+      model.updateWhoVoteWinners(whoVoteWinners, points);
     });
   };
 

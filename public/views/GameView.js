@@ -190,14 +190,24 @@ class GameView extends EventEmitter {
     this._updateBestVoteWinner();
   }
 
-  newWhoVoteWinners() {
-    const { players, whoVoteWinners, bestVoteWinner } = this._model;
+  async newWhoVoteWinners() {
+    const {
+      points, players, bestVoteWinner, roundNumber,
+    } = this._model;
 
     const bestVoteWinnerName = players[bestVoteWinner.pid].name;
-    console.log(players);
     showById(this._overlay, true, 'flex');
     this._bestVoteWinner.textContent = `The winning prompt was written by ${bestVoteWinnerName}!`;
-    this._updatePoints();
+    Object.entries(points[roundNumber]).forEach(([pid, pointChange]) => {
+      const pointsAwardedList = document.querySelector('.points-awarded');
+
+      const listItem = document.createElement('li');
+      listItem.textContent = `${players[pid].name}: ${pointChange}`;
+      pointsAwardedList.appendChild(listItem);
+    });
+
+    await this._setTimer(3);
+    // call this._updatePoints() on new round
   }
 
   nextTurn() {

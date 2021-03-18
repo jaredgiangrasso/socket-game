@@ -15,6 +15,7 @@ class GameModel extends EventEmitter {
     this._playerCount = 0;
     this._players = {};
     this._playerTurn = null;
+    this._points = {};
     this._prompt = '';
     this._responses = [];
     this._roundNumber = null;
@@ -59,6 +60,10 @@ class GameModel extends EventEmitter {
   get playerTurn() { return this._playerTurn; }
 
   set playerTurn(playerTurn) { this._playerTurn = playerTurn; }
+
+  get points() { return this._points; }
+
+  set points(points) { this._points = points; }
 
   get prompt() { return this._prompt; }
 
@@ -132,9 +137,9 @@ class GameModel extends EventEmitter {
     this.emit('new best vote winner');
   }
 
-  updateWhoVoteWinners(winners, players) {
+  updateWhoVoteWinners(winners, points) {
     this._whoVoteWinners = winners;
-    this._players = players;
+    this._points = points;
     this.emit('new who vote winners');
   }
 

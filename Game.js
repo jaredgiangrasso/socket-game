@@ -3,6 +3,7 @@ class Game {
     this._players = {};
     this._playerCount = 0;
     this._playerTurn = 0;
+    this._points = {};
     this._responses = {};
     this._roundNumber = 0;
     this._started = false;
@@ -19,6 +20,10 @@ class Game {
   get playerTurn() { return this._playerTurn; }
 
   set playerTurn(playerTurn) { this._playerTurn = playerTurn; }
+
+  get points() { return this._points; }
+
+  set points(points) { this._points = points; }
 
   get responses() { return this._responses; }
 
@@ -69,6 +74,11 @@ class Game {
   }
 
   nextRound() {
+    if (this._roundNumber === 0) {
+      const randomPlayer = this.getRandomPlayer();
+      this._playerTurn = randomPlayer.pid;
+    }
+
     this._roundNumber += 1;
     this._whoVoteWinners = [];
     this._bestVoteWinner = '';
@@ -86,6 +96,11 @@ class Game {
     this._responses[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
       ...accu,
       [curr]: '',
+    }), {});
+
+    this._points[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
+      ...accu,
+      [curr]: 0,
     }), {});
   }
 

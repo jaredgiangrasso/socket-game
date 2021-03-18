@@ -40,9 +40,7 @@ io.on('connection', (socket) => {
     game.nextRound();
     const WAIT_TIME = 10000;
 
-    const randomPlayer = game.getRandomPlayer();
-    game.playerTurn = randomPlayer.pid;
-    io.sockets.emit('next turn', randomPlayer);
+    io.sockets.emit('next turn', game.playerTurn);
 
     await sleep(3000);
     io.sockets.emit('request prompt');
@@ -55,8 +53,11 @@ io.on('connection', (socket) => {
     await sleep(3000);
     io.sockets.emit('request who vote');
     await sleep(500);
-    io.sockets.emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, whoVotes: game.whoVotes, players: game.players });
-    await sleep(WAIT_TIME + 2000);
+    io.sockets.emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, points: game.points });
+    await sleep(3000);
+
+    game.nextRound();
+    io.sockets.emit('new round');
   });
 
   socket.on('new prompt', (prompt) => {
@@ -86,11 +87,11 @@ io.on('connection', (socket) => {
   socket.on('new best vote', (vote) => {
     const { value } = vote;
     const {
-      roundNumber, bestVotes, players,
+      roundNumber, bestVotes, points,
     } = game;
 
     if (value) {
-      players[value].points += BEST_VOTE_POINTS;
+      points[roundNumber][value] += BEST_VOTE_POINTS;
       bestVotes[roundNumber][value] += 1;
     }
 
@@ -110,12 +111,12 @@ io.on('connection', (socket) => {
   socket.on('new who vote', (vote) => {
     const { value, pid: votePid } = vote;
     const {
-      roundNumber, whoVotes, bestVoteWinner, whoVoteWinners, players,
+      roundNumber, whoVotes, bestVoteWinner, whoVoteWinners, points,
     } = game;
 
     if (value) {
       if (value === bestVoteWinner.pid) {
-        players[value].points += WHO_VOTE_POINTS;
+        points[roundNumber][value] += WHO_VOTE_POINTS;
         whoVotes[roundNumber][value] += 1;
         whoVoteWinners.push(votePid);
       }
