@@ -21,6 +21,7 @@ function sleep(ms) {
 
 const BEST_VOTE_POINTS = 50;
 const WHO_VOTE_POINTS = 50;
+const ROUNDS = 2;
 
 io.on('connection', (socket) => {
   const pid = socket.id;
@@ -40,24 +41,25 @@ io.on('connection', (socket) => {
     game.nextRound();
     const WAIT_TIME = 10000;
 
-    io.sockets.emit('next turn', game.playerTurn);
+    for (let i = 0; i < ROUNDS; i++) {
+      io.sockets.emit('next turn', game.playerTurn);
+      await sleep(3000);
+      io.sockets.emit('request prompt');
+      await sleep(3000);
+      io.sockets.emit('request response');
+      await sleep(3000);
+      io.sockets.emit('request best vote');
+      await sleep(500);
+      io.sockets.emit('update best vote winner', { winner: game.bestVoteWinner, bestVotes: game.bestVotes });
+      await sleep(3000);
+      io.sockets.emit('request who vote');
+      await sleep(500);
+      io.sockets.emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, points: game.points });
+      await sleep(3000);
 
-    await sleep(3000);
-    io.sockets.emit('request prompt');
-    await sleep(3000);
-    io.sockets.emit('request response');
-    await sleep(3000);
-    io.sockets.emit('request best vote');
-    await sleep(500);
-    io.sockets.emit('update best vote winner', { winner: game.bestVoteWinner, bestVotes: game.bestVotes });
-    await sleep(3000);
-    io.sockets.emit('request who vote');
-    await sleep(500);
-    io.sockets.emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, points: game.points });
-    await sleep(3000);
-
-    game.nextRound();
-    io.sockets.emit('new round');
+      game.nextRound();
+      io.sockets.emit('new round');
+    }
   });
 
   socket.on('new prompt', (prompt) => {

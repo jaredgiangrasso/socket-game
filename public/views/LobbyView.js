@@ -26,7 +26,6 @@ class LobbyView extends EventEmitter {
 
   _updatePlayerTurn(player) {
     const { pid } = player;
-    this._model.playerTurn = pid;
 
     const playerListItems = this._lobbyPlayerList.children;
     for (let i = 0; i < playerListItems.length; i += 1) {
@@ -46,6 +45,7 @@ class LobbyView extends EventEmitter {
 
   nextTurn(player) {
     this._updatePlayerTurn(player);
+    this._updateRoundNumber();
   }
 
   removePlayer() {
@@ -64,7 +64,6 @@ class LobbyView extends EventEmitter {
   }
 
   startGame() {
-    this._updateRoundNumber();
     showById(this._lobby, false);
     showById(this._game, true, 'flex');
   }

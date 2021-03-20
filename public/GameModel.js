@@ -120,6 +120,10 @@ class GameModel extends EventEmitter {
   }
 
   nextTurn(player) {
+    this._roundNumber += 1;
+    const { pid } = player;
+    this._playerTurn = pid;
+
     if (!this._started) {
       this.setStart();
       this.emit('start game');

@@ -22,6 +22,7 @@ class GameController extends EventEmitter {
     this._loginForm = document.forms['login-form'];
     this._prompt = document.getElementById('prompt');
     this._promptForm = document.getElementById('prompt-form');
+    this._response = document.getElementById('response');
     this._responseForm = document.getElementById('response-form');
     this._startButton = document.getElementById('start-button');
     this._bestVoteButtons = document.querySelectorAll('.response-vote-list-item-container .vote-button');
@@ -63,6 +64,7 @@ class GameController extends EventEmitter {
       const promptData = myPrompt || prompt;
       socket.emit('new prompt', promptData);
     }
+    document.getElementById('prompt-form').reset();
     showById(this._prompt, false);
 
     return false;
@@ -83,7 +85,8 @@ class GameController extends EventEmitter {
       const responseData = myResponse || response;
       socket.emit('new response', { value: responseData, pid: this._model.myId });
     }
-    showById(this._responseForm, false);
+    document.getElementById('response-form').reset();
+    showById(this._response, false);
 
     return false;
   }

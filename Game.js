@@ -76,7 +76,7 @@ class Game {
   nextRound() {
     if (this._roundNumber === 0) {
       const randomPlayer = this.getRandomPlayer();
-      this._playerTurn = randomPlayer.pid;
+      this._playerTurn = randomPlayer;
     }
 
     this._roundNumber += 1;

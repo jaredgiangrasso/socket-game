@@ -1,4 +1,6 @@
-import { showById, addPlayerListItem, removePlayerListItem } from '../helpers.js';
+import {
+  showById, addPlayerListItem, removePlayerListItem, removeChildren,
+} from '../helpers.js';
 import EventEmitter from '../EventEmitter.js';
 
 class GameView extends EventEmitter {
@@ -66,6 +68,7 @@ class GameView extends EventEmitter {
         listItem.appendChild(voteButtonCell);
 
         this._playerVoteList.appendChild(listItem);
+        showById(this._playerVoteList, true);
       }
     });
   }
@@ -133,7 +136,6 @@ class GameView extends EventEmitter {
 
   // TODO: use document fragment for better performance
   async newResponses(responses) {
-    showById(this._responseVoteList, true);
     this._gameHelp.textContent = 'Vote for your favorite response';
 
     responses.forEach((response) => {
@@ -170,6 +172,7 @@ class GameView extends EventEmitter {
           }
 
           this._responseVoteList.appendChild(listItem);
+          showById(this._responseVoteList, true);
         }
       }
     });
@@ -211,6 +214,13 @@ class GameView extends EventEmitter {
   }
 
   nextTurn() {
+    showById(this._overlay, false);
+    showById(this._responseVoteList, false);
+    showById(this._playerVoteList, false);
+    removeChildren(this._responseVoteList);
+    removeChildren(this._playerVoteList);
+    this._promptTitle.textContent = '';
+
     if (this._model.isMyTurn()) {
       showById(this._prompt, true);
 
@@ -235,6 +245,7 @@ class GameView extends EventEmitter {
   }
 
   updateBestVotes() {
+    showById(this._responseVoteList, true);
     const { bestVotes, roundNumber } = this._model;
 
     [...this._bestVotes].forEach((vote) => {
