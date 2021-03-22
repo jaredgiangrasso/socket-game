@@ -19,43 +19,55 @@ function sleep(ms) {
   });
 }
 
+const rooms = {};
+
 const BEST_VOTE_POINTS = 50;
 const WHO_VOTE_POINTS = 50;
 const ROUNDS = 2;
 
 io.on('connection', (socket) => {
   const pid = socket.id;
+  // check for current room instead of game.started
   io.sockets.emit('init', game.started);
 
-  socket.on('player ready', (data) => {
-    const { name, color } = data;
-    // TODO: first, check for an existing user with this name, if they exist, return an error event
-    game.addPlayer({ name, color, pid });
-    const newPlayer = game.getPlayer(pid);
+  socket.on('room', (roomId) => {
+    rooms[roomId] = new Game();
+  });
 
-    io.sockets.emit('add player', { newPlayer, players: game.players, playerCount: game.playerCount });
+  socket.on('player ready', (data) => {
+    const { name, color, roomId } = data;
+
+    const room = rooms[roomId];
+
+    // TODO: first, check for an existing user with this name, if they exist, return an error event
+    room.addPlayer({
+      name, color, pid,
+    });
+    const newPlayer = room.getPlayer(pid);
+
+    io.sockets.emit('add player', { newPlayer, players: room.players, playerCount: room.playerCount });
   });
 
   socket.on('game start', async () => {
     game.started = true;
     game.nextRound();
-    const WAIT_TIME = 10000;
+    const WAIT_TIME = 3000;
 
     for (let i = 0; i < ROUNDS; i++) {
       io.sockets.emit('next turn', game.playerTurn);
-      await sleep(3000);
+      await sleep(WAIT_TIME * 2);
       io.sockets.emit('request prompt');
-      await sleep(3000);
+      await sleep(WAIT_TIME);
       io.sockets.emit('request response');
-      await sleep(3000);
+      await sleep(WAIT_TIME);
       io.sockets.emit('request best vote');
       await sleep(500);
       io.sockets.emit('update best vote winner', { winner: game.bestVoteWinner, bestVotes: game.bestVotes });
-      await sleep(3000);
+      await sleep(WAIT_TIME);
       io.sockets.emit('request who vote');
       await sleep(500);
       io.sockets.emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, points: game.points });
-      await sleep(3000);
+      await sleep(WAIT_TIME);
 
       game.nextRound();
       io.sockets.emit('new round');

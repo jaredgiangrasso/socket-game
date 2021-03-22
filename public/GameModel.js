@@ -7,6 +7,7 @@ class GameModel extends EventEmitter {
     this._bestVotes = {};
     this._bestVoteWinner = {};
     this._gamePhase = '';
+    this._isHost = false;
     this._myBestVote = '';
     this._myId = null;
     this._myPrompt = '';
@@ -18,6 +19,7 @@ class GameModel extends EventEmitter {
     this._points = {};
     this._prompt = '';
     this._responses = [];
+    this._roomId = null;
     this._roundNumber = null;
     this._started = false;
     this._whoVoteWinners = [];
@@ -28,6 +30,10 @@ class GameModel extends EventEmitter {
   get bestVoteWinner() { return this._bestVoteWinner; }
 
   get gamePhase() { return this._gamePhase; }
+
+  get isHost() { return this._isHost; }
+
+  set isHost(isHost) { this._isHost = isHost; }
 
   get myBestVote() { return this._myBestVote; }
 
@@ -68,6 +74,10 @@ class GameModel extends EventEmitter {
   get prompt() { return this._prompt; }
 
   set prompt(prompt) { this._prompt = prompt; }
+
+  get roomId() { return this._roomId; }
+
+  set roomId(roomId) { this._roomId = roomId; }
 
   get roundNumber() { return this._roundNumber; }
 
@@ -139,6 +149,11 @@ class GameModel extends EventEmitter {
   updateBestVoteWinner(winner) {
     this._bestVoteWinner = winner;
     this.emit('new best vote winner');
+  }
+
+  updateRoomId(roomId) {
+    this._roomId = roomId;
+    this.emit('join room');
   }
 
   updateWhoVoteWinners(winners, points) {

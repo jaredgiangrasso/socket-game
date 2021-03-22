@@ -52,9 +52,11 @@ class Game {
     if (!existingPlayer) {
       this._playerCount += 1;
 
-      const { name, color, pid } = data;
+      const {
+        name, color, pid, roomId,
+      } = data;
       this._players[pid] = {
-        name, color, pid, points: 0,
+        name, color, pid, points: 0, room: roomId,
       };
     }
   }

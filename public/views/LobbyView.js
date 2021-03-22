@@ -56,6 +56,10 @@ class LobbyView extends EventEmitter {
     showById(this._login, false);
     showById(this._lobby, true);
     showById(this._gameHeader, true);
+
+    if (this._model.isHost) {
+      showById(this._startButtonWrapper, true);
+    }
   }
 
   showInProgress() {

@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
   const lobbyView = new LobbyView(model, controller);
   const gameView = new GameView(model, controller);
 
+  const { room: roomId } = Qs.parse(window.location.search, {
+    ignoreQueryPrefix: true,
+  });
+
   const runGame = () => {
     socket.on('add player', ({ newPlayer, players, playerCount }) => {
       model.addPlayer(newPlayer, players, playerCount);
@@ -67,6 +71,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
   const gameStatus = await getGameStatus();
   model.started = gameStatus;
+
+  if (roomId) {
+    model.updateRoomId(roomId);
+  }
 
   if (model.started) lobbyView.showInProgress();
   else runGame();

@@ -22,7 +22,7 @@ li {
   z-index: 50;
 }
 
-#lobby, #game, #in-progress, #prompt, #response, #response-vote-list, #overlay {
+#lobby, #game, #in-progress, #prompt, #response, #response-vote-list, #overlay, #join-game-button, #start-button-wrapper {
   display: none;
 }
 

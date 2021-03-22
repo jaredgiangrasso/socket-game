@@ -12,8 +12,12 @@ class GameView extends EventEmitter {
     this._bestVotes = document.getElementsByClassName('best-votes');
     this._bestVoteWinner = document.getElementById('best-vote-winner');
     this._gamePlayerList = document.getElementById('game-player-list');
+    this._hostGameButton = document.getElementById('host-game-button');
+    this._joinGameButton = document.getElementById('join-game-button');
+    this._nextRoundNumber = document.getElementById('next-round-number');
     this._overlay = document.getElementById('overlay');
     this._playerVoteList = document.getElementById('player-vote-list');
+    this._pointsAwardedList = document.querySelector('.points-awarded');
     this._prompt = document.getElementById('prompt');
     this._promptForm = document.getElementById('prompt-form');
     this._promptTitle = document.getElementById('prompt-title');
@@ -24,6 +28,7 @@ class GameView extends EventEmitter {
     this._gameHelp = document.getElementById('game-help');
 
     this.bestVoteRequestedUnlisten = this._model.on('best vote requested', () => this.bestVoteRequested());
+    this.joinRoomUnlisten = this._model.on('join room', () => this.joinRoom());
     this.newPromptUnlisten = this._model.on('new prompt', () => this.newPrompt());
     this.newResponsesUnlisten = this._model.on('new responses', (responses) => this.newResponses(responses));
     this.newBestVoteWinnerUnlisten = this._model.on('new best vote winner', () => this.newBestVoteWinner());
@@ -73,16 +78,20 @@ class GameView extends EventEmitter {
     });
   }
 
-  _setTimer(seconds) {
+  _setTimer(seconds, showTimer = true) {
     return new Promise((resolve, reject) => {
-      this._updateTimer(seconds);
-      showById(this._timer, true);
+      if (showTimer) {
+        this._updateTimer(seconds);
+        showById(this._timer, true);
+      }
       let i = seconds;
 
       const int = setInterval(() => {
         i -= 1;
-        this._updateTimer(i);
-        if (i < 0) {
+        if (showTimer) {
+          this._updateTimer(i);
+        }
+        if (i === 0) {
           resolve();
           clearInterval(int);
         }
@@ -119,6 +128,11 @@ class GameView extends EventEmitter {
   bestVoteRequested() {
     this._setTimer(3);
     // showById(this._responseVoteList, false);
+  }
+
+  joinRoom() {
+    showById(this._hostGameButton, false);
+    showById(this._joinGameButton, true);
   }
 
   async newPrompt() {
@@ -200,26 +214,33 @@ class GameView extends EventEmitter {
 
     const bestVoteWinnerName = players[bestVoteWinner.pid].name;
     showById(this._overlay, true, 'flex');
+    this._gameHelp.textContent = '';
     this._bestVoteWinner.textContent = `The winning prompt was written by ${bestVoteWinnerName}!`;
     Object.entries(points[roundNumber]).forEach(([pid, pointChange]) => {
-      const pointsAwardedList = document.querySelector('.points-awarded');
-
       const listItem = document.createElement('li');
       listItem.textContent = `${players[pid].name}: ${pointChange}`;
-      pointsAwardedList.appendChild(listItem);
+      this._pointsAwardedList.appendChild(listItem);
     });
 
     await this._setTimer(3);
-    // call this._updatePoints() on new round
   }
 
-  nextTurn() {
+  async nextTurn() {
     showById(this._overlay, false);
     showById(this._responseVoteList, false);
     showById(this._playerVoteList, false);
     removeChildren(this._responseVoteList);
     removeChildren(this._playerVoteList);
+    removeChildren(this._pointsAwardedList);
+    this._bestVoteWinner.textContent = '';
     this._promptTitle.textContent = '';
+    this._updatePoints();
+
+    showById(this._overlay, true, 'flex');
+    this._nextRoundNumber.textContent = `Round ${this._model.roundNumber}`;
+    await this._setTimer(3);
+    showById(this._overlay, false);
+    this._nextRoundNumber.textContent = '';
 
     if (this._model.isMyTurn()) {
       showById(this._prompt, true);
@@ -233,7 +254,7 @@ class GameView extends EventEmitter {
       showById(this._gameHelp, true);
     }
 
-    this._setTimer(3);
+    await this._setTimer(3);
   }
 
   removePlayer() {
