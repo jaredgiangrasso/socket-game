@@ -5,8 +5,6 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const Game = require('./Game');
 
-const game = new Game();
-
 app.use(express.static(`${__dirname}/public`));
 
 app.get('/', (req, res) => {
@@ -27,11 +25,18 @@ const ROUNDS = 2;
 
 io.on('connection', (socket) => {
   const pid = socket.id;
-  // check for current room instead of game.started
-  io.sockets.emit('init', game.started);
+  let currentRoom = null;
 
   socket.on('room', (roomId) => {
-    rooms[roomId] = new Game();
+    const room = rooms[roomId];
+    if (!room) {
+      rooms[roomId] = new Game();
+    }
+    currentRoom = roomId;
+    socket.join(roomId);
+
+    const game = rooms[roomId];
+    io.sockets.in(roomId).emit('init', game.started);
   });
 
   socket.on('player ready', (data) => {
@@ -44,43 +49,45 @@ io.on('connection', (socket) => {
       name, color, pid,
     });
     const newPlayer = room.getPlayer(pid);
-
-    io.sockets.emit('add player', { newPlayer, players: room.players, playerCount: room.playerCount });
+    io.sockets.in(roomId).emit('add player', { newPlayer, players: room.players, playerCount: room.playerCount });
   });
 
-  socket.on('game start', async () => {
+  socket.on('game start', async ({ roomId }) => {
+    const game = rooms[roomId];
     game.started = true;
     game.nextRound();
     const WAIT_TIME = 3000;
 
     for (let i = 0; i < ROUNDS; i++) {
-      io.sockets.emit('next turn', game.playerTurn);
+      io.sockets.in(roomId).emit('next turn', game.playerTurn);
       await sleep(WAIT_TIME * 2);
-      io.sockets.emit('request prompt');
+      io.sockets.in(roomId).emit('request prompt');
       await sleep(WAIT_TIME);
-      io.sockets.emit('request response');
+      io.sockets.in(roomId).emit('request response');
       await sleep(WAIT_TIME);
-      io.sockets.emit('request best vote');
+      io.sockets.in(roomId).emit('request best vote');
       await sleep(500);
-      io.sockets.emit('update best vote winner', { winner: game.bestVoteWinner, bestVotes: game.bestVotes });
+      io.sockets.in(roomId).emit('update best vote winner', { winner: game.bestVoteWinner, bestVotes: game.bestVotes });
       await sleep(WAIT_TIME);
-      io.sockets.emit('request who vote');
+      io.sockets.in(roomId).emit('request who vote');
       await sleep(500);
-      io.sockets.emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, points: game.points });
+      io.sockets.in(roomId).emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, points: game.points });
       await sleep(WAIT_TIME);
 
       game.nextRound();
-      io.sockets.emit('new round');
+      io.sockets.in(roomId).emit('new round');
     }
   });
 
-  socket.on('new prompt', (prompt) => {
+  socket.on('new prompt', ({ roomId, data: { prompt } }) => {
+    const game = rooms[roomId];
     game.prompt = prompt;
 
     io.sockets.emit('update prompt', prompt);
   });
 
-  socket.on('new response', (response) => {
+  socket.on('new response', ({ roomId, data: { response } }) => {
+    const game = rooms[roomId];
     const { value, pid: responsePid } = response;
     const {
       roundNumber, responses,
@@ -98,7 +105,8 @@ io.on('connection', (socket) => {
     io.sockets.emit('new responses', responsesResponse);
   });
 
-  socket.on('new best vote', (vote) => {
+  socket.on('new best vote', ({ roomId, data: { vote } }) => {
+    const game = rooms[roomId];
     const { value } = vote;
     const {
       roundNumber, bestVotes, points,
@@ -122,7 +130,8 @@ io.on('connection', (socket) => {
     game.bestVoteWinner = currentBestVoteWinner;
   });
 
-  socket.on('new who vote', (vote) => {
+  socket.on('new who vote', ({ roomId, data: { vote } }) => {
+    const game = rooms[roomId];
     const { value, pid: votePid } = vote;
     const {
       roundNumber, whoVotes, bestVoteWinner, whoVoteWinners, points,
@@ -138,10 +147,14 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    const player = game.getPlayer(pid);
-    if (player) {
-      game.removePlayer(pid);
-      io.sockets.emit('remove player', pid);
+    const game = rooms[currentRoom];
+    if (game) {
+      const player = game.getPlayer(pid);
+      if (player) {
+        game.removePlayer(pid);
+        io.sockets.in(currentRoom).emit('remove player', pid);
+        socket.leave(currentRoom);
+      }
     }
   });
 });

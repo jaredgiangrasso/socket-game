@@ -62,19 +62,22 @@ document.addEventListener('DOMContentLoaded', async (event) => {
   };
 
   const getGameStatus = () => new Promise((resolve, reject) => {
-    socket.once('init', (started) => { resolve(!!started); });
+    socket.once('init', (started) => {
+      resolve(!!started);
+    });
   });
 
   socket.on('connect', () => {
     model.myId = socket.id;
   });
 
-  const gameStatus = await getGameStatus();
-  model.started = gameStatus;
-
   if (roomId) {
     model.updateRoomId(roomId);
+    socket.emit('room', roomId);
   }
+
+  const gameStatus = await getGameStatus();
+  model.started = gameStatus;
 
   if (model.started) lobbyView.showInProgress();
   else runGame();

@@ -53,6 +53,7 @@ class GameController extends EventEmitter {
 
         socket.emit('room', newRoomId);
         window.history.pushState({}, null, url);
+        this._model.updateRoomId(newRoomId);
         this._model.isHost = true;
       }
 
@@ -80,7 +81,7 @@ class GameController extends EventEmitter {
       this._gameHelp.textContent = 'Prompt submitted';
     } else {
       const promptData = myPrompt || prompt;
-      this._socketEmit('new prompt', promptData);
+      this._socketEmit('new prompt', { prompt: promptData });
     }
     document.getElementById('prompt-form').reset();
     showById(this._prompt, false);
@@ -101,7 +102,7 @@ class GameController extends EventEmitter {
       this._gameHelp.textContent = 'Response submitted';
     } else {
       const responseData = myResponse || response;
-      this._socketEmit('new response', { value: responseData, pid: this._model.myId });
+      this._socketEmit('new response', { response: { value: responseData, pid: this._model.myId } });
     }
     document.getElementById('response-form').reset();
     showById(this._response, false);
@@ -182,13 +183,13 @@ class GameController extends EventEmitter {
   }
 
   submitBestVote() {
-    this._socketEmit('new best vote', { value: this._model.myBestVote, pid: this._model.myId });
+    this._socketEmit('new best vote', { vote: { value: this._model.myBestVote, pid: this._model.myId } });
     this._model.myBestVote = '';
     this.hideBestVoteButtons();
   }
 
   submitWhoVote() {
-    this._socketEmit('new who vote', { value: this._model.myWhoVote, pid: this._model.myId });
+    this._socketEmit('new who vote', { vote: { value: this._model.myWhoVote, pid: this._model.myId } });
     this._model.myWhoVote = '';
     this.hideWhoVoteButtons();
   }
