@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       model.addPlayer(newPlayer, players, playerCount);
     });
 
+    socket.on('next round', async () => {
+      model.nextRound();
+    });
+
     socket.on('next turn', async (pid) => {
       model.nextTurn(pid);
     });

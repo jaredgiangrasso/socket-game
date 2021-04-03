@@ -26,7 +26,7 @@ export const addPlayerListItem = (playerList, players, showPoints) => {
       if (showPoints) {
         const points = document.createElement('span');
         points.classList.add('points');
-        points.textContent = player.points;
+        points.textContent = `${player.points} ${player.points === 1 ? 'point' : 'points'}`;
         listItem.appendChild(points);
       }
 

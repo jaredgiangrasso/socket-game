@@ -59,6 +59,7 @@ io.on('connection', (socket) => {
 
     for (let i = 0; i < ROUNDS; i++) {
       game.nextRound();
+      io.sockets.in(roomId).emit('next round');
 
       for (let j = 0; j < game.playerCount; j++) {
         game.nextTurn();

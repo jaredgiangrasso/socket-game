@@ -129,6 +129,11 @@ class GameModel extends EventEmitter {
     this.emit('new responses', responses);
   }
 
+  nextRound() {
+    this._roundNumber += 1;
+    this.emit('next round');
+  }
+
   nextTurn(pid) {
     this._turnNumber += 1;
     this._playerTurn = pid;

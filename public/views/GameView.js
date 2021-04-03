@@ -14,6 +14,7 @@ class GameView extends EventEmitter {
     this._gamePlayerList = document.getElementById('game-player-list');
     this._hostGameButton = document.getElementById('host-game-button');
     this._joinGameButton = document.getElementById('join-game-button');
+    this._nextTurnRoundTitle = document.getElementById('next-turn-round-title');
     this._nextTurnTitle = document.getElementById('next-turn-title');
     this._overlay = document.getElementById('overlay');
     this._playerVoteList = document.getElementById('player-vote-list');
@@ -112,16 +113,31 @@ class GameView extends EventEmitter {
     else timer.textContent = `${seconds} ${seconds === 1 ? 'second' : 'seconds'} remaining`;
   }
 
+  _updatePlayerTurn(pid) {
+    const playerListItems = this._gamePlayerList.children;
+    console.log(playerListItems, this._gamePlayerList);
+    [...playerListItems].forEach((player) => {
+      const currentPlayerId = player.getAttribute('data-id');
+
+      if (currentPlayerId === pid) {
+        player.classList.add('current-turn');
+      }
+    });
+  }
+
   _updatePoints() {
-    const { players } = this._model;
+    const { points, roundNumber, playerTurn } = this._model;
+    const currentRoundPoints = points[roundNumber];
+
+    if (!currentRoundPoints) return;
 
     const playerListItems = document.querySelectorAll('#game-player-list li');
     [...playerListItems].forEach((player) => {
       const currentPlayerId = player.getAttribute('data-id');
-      const { points } = players[currentPlayerId];
+      const currentPlayerPoints = currentRoundPoints[playerTurn][currentPlayerId];
 
       const pointsElement = player.querySelector('.points');
-      pointsElement.textContent = `${points} ${points === 1 ? 'point' : 'points'}`;
+      pointsElement.textContent = `${currentPlayerPoints} ${currentPlayerPoints === 1 ? 'point' : 'points'}`;
     });
   }
 
@@ -213,6 +229,7 @@ class GameView extends EventEmitter {
     } = this._model;
 
     const bestVoteWinnerName = players[bestVoteWinner.pid].name;
+    this._updatePoints();
     showById(this._overlay, true, 'flex');
     this._gameHelp.textContent = '';
     this._bestVoteWinner.textContent = `The winning prompt was written by ${bestVoteWinnerName}!`;
@@ -234,12 +251,12 @@ class GameView extends EventEmitter {
     removeChildren(this._pointsAwardedList);
     this._bestVoteWinner.textContent = '';
     this._promptTitle.textContent = '';
-    this._updatePoints();
+    this._updatePlayerTurn(this._model.playerTurn);
 
-    console.log(this._model.players, this._model.playerTurn);
     const playerTurnName = this._model.players[this._model.playerTurn].name;
 
     showById(this._overlay, true, 'flex');
+    this._nextTurnRoundTitle.textContent = `Round: ${this._model.roundNumber}`;
     this._nextTurnTitle.textContent = `${playerTurnName}'s Turn`;
     await this._setTimer(3);
     showById(this._overlay, false);
