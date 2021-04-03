@@ -24,9 +24,7 @@ class LobbyView extends EventEmitter {
     this.removePlayerUnlisten = this._model.on('remove player', () => this.removePlayer());
   }
 
-  _updatePlayerTurn(player) {
-    const { pid } = player;
-
+  _updatePlayerTurn(pid) {
     const playerListItems = this._lobbyPlayerList.children;
     for (let i = 0; i < playerListItems.length; i += 1) {
       if (playerListItems[i].id === pid) {

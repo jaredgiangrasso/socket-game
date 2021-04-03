@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       model.addPlayer(newPlayer, players, playerCount);
     });
 
-    socket.on('next turn', async (player) => {
-      model.nextTurn(player);
+    socket.on('next turn', async (pid) => {
+      model.nextTurn(pid);
     });
 
     socket.on('update prompt', (prompt) => {

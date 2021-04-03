@@ -5,8 +5,11 @@ class Game {
     this._playerTurn = 0;
     this._points = {};
     this._responses = {};
+    this._playerTurn = '';
     this._roundNumber = 0;
     this._started = false;
+    this._turnNumber = 0;
+    this._turnOrder = [];
     this._bestVotes = {};
     this._bestVoteWinner = '';
     this._whoVotes = {};
@@ -47,6 +50,22 @@ class Game {
 
   set whoVoteWinners(voteWinners) { this._whoVoteWinners = voteWinners; }
 
+  _getTurnOrder() {
+    const eligiblePlayers = Object.keys(this._players);
+    const turnOrder = [];
+
+    for (let i = 0; i < this._playerCount; i++) {
+      const random = Math.random();
+      const randomInt = Math.floor(random * eligiblePlayers.length);
+      const randomEligiblePlayer = eligiblePlayers[randomInt];
+
+      turnOrder.push(randomEligiblePlayer);
+      eligiblePlayers.splice(randomInt, 1);
+    }
+
+    return turnOrder;
+  }
+
   addPlayer(data) {
     const existingPlayer = this.getPlayer(data.pid);
     if (!existingPlayer) {
@@ -62,6 +81,7 @@ class Game {
   }
 
   addResponse(response) {
+    // TODO is this out of date?
     this._responses.push(response);
   }
 
@@ -69,41 +89,54 @@ class Game {
     return this._players[pid];
   }
 
-  getRandomPlayer() {
-    const playersArr = Object.values(this._players);
-    const randomInt = Math.floor(Math.random() * playersArr.length);
-    return playersArr[randomInt];
-  }
+  nextTurn() {
+    this._turnNumber += 1;
+    const isFirstTurnOfRound = this._turnNumber === 1;
 
-  nextRound() {
-    if (this._roundNumber === 0) {
-      const randomPlayer = this.getRandomPlayer();
-      this._playerTurn = randomPlayer;
+    if (isFirstTurnOfRound) {
+      this._bestVotes[this._roundNumber] = {};
+      this._whoVotes[this._roundNumber] = {};
+      this._responses[this._roundNumber] = {};
+      this._points[this._roundNumber] = {};
     }
 
-    this._roundNumber += 1;
+    this._playerTurn = this._turnOrder[this._turnNumber - 1];
+
     this._whoVoteWinners = [];
     this._bestVoteWinner = '';
 
-    this._bestVotes[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
-      ...accu,
-      [curr]: 0,
-    }), {});
+    this._bestVotes[this._roundNumber][this._playerTurn] = Object.keys(this._players)
+      .reduce((accu, curr) => ({
+        ...accu,
+        [curr]: 0,
+      }), {});
 
-    this._whoVotes[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
-      ...accu,
-      [curr]: 0,
-    }), {});
+    this._whoVotes[this._roundNumber][this._playerTurn] = Object.keys(this._players)
+      .reduce((accu, curr) => ({
+        ...accu,
+        [curr]: 0,
+      }), {});
 
-    this._responses[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
-      ...accu,
-      [curr]: '',
-    }), {});
+    this._responses[this._roundNumber][this._playerTurn] = Object.keys(this._players)
+      .reduce((accu, curr) => ({
+        ...accu,
+        [curr]: '',
+      }), {});
 
-    this._points[this._roundNumber] = Object.keys(this._players).reduce((accu, curr) => ({
-      ...accu,
-      [curr]: 0,
-    }), {});
+    this._points[this._roundNumber][this._playerTurn] = Object.keys(this._players)
+      .reduce((accu, curr) => ({
+        ...accu,
+        [curr]: 0,
+      }), {});
+  }
+
+  nextRound() {
+    this._roundNumber += 1;
+    this._turnNumber = 0;
+
+    if (this._roundNumber === 1) {
+      this._turnOrder = this._getTurnOrder();
+    }
   }
 
   removePlayer(pid) {

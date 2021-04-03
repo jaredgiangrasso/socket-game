@@ -55,27 +55,31 @@ io.on('connection', (socket) => {
   socket.on('game start', async ({ roomId }) => {
     const game = rooms[roomId];
     game.started = true;
-    game.nextRound();
     const WAIT_TIME = 3000;
 
     for (let i = 0; i < ROUNDS; i++) {
-      io.sockets.in(roomId).emit('next turn', game.playerTurn);
-      await sleep(WAIT_TIME * 2);
-      io.sockets.in(roomId).emit('request prompt');
-      await sleep(WAIT_TIME);
-      io.sockets.in(roomId).emit('request response');
-      await sleep(WAIT_TIME);
-      io.sockets.in(roomId).emit('request best vote');
-      await sleep(500);
-      io.sockets.in(roomId).emit('update best vote winner', { winner: game.bestVoteWinner, bestVotes: game.bestVotes });
-      await sleep(WAIT_TIME);
-      io.sockets.in(roomId).emit('request who vote');
-      await sleep(500);
-      io.sockets.in(roomId).emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, points: game.points });
-      await sleep(WAIT_TIME);
-
       game.nextRound();
-      io.sockets.in(roomId).emit('new round');
+
+      for (let j = 0; j < game.playerCount; j++) {
+        game.nextTurn();
+
+        io.sockets.in(roomId).emit('next turn', game.playerTurn);
+        await sleep(WAIT_TIME * 2);
+        io.sockets.in(roomId).emit('request prompt');
+        await sleep(WAIT_TIME);
+        io.sockets.in(roomId).emit('request response');
+        await sleep(WAIT_TIME);
+        io.sockets.in(roomId).emit('request best vote');
+        await sleep(500);
+        io.sockets.in(roomId).emit('update best vote winner', { winner: game.bestVoteWinner, bestVotes: game.bestVotes });
+        await sleep(WAIT_TIME);
+        io.sockets.in(roomId).emit('request who vote');
+        await sleep(500);
+        io.sockets.in(roomId).emit('update who vote winners', { whoVoteWinners: game.whoVoteWinners, points: game.points });
+        await sleep(WAIT_TIME);
+
+        io.sockets.in(roomId).emit('new turn');
+      }
     }
   });
 
@@ -90,12 +94,12 @@ io.on('connection', (socket) => {
     const game = rooms[roomId];
     const { value, pid: responsePid } = response;
     const {
-      roundNumber, responses,
+      playerTurn, responses, roundNumber,
     } = game;
 
-    responses[roundNumber][responsePid] = value;
+    responses[roundNumber][playerTurn][responsePid] = value;
 
-    const responsesResponse = Object.entries(responses[roundNumber])
+    const responsesResponse = Object.entries(responses[roundNumber][playerTurn])
       .filter(([resPid, responseValue]) => responseValue !== '')
       .map(([resPid, responseValue]) => ({
         pid: resPid,
@@ -109,23 +113,24 @@ io.on('connection', (socket) => {
     const game = rooms[roomId];
     const { value } = vote;
     const {
-      roundNumber, bestVotes, points,
+      playerTurn, bestVotes, points, roundNumber,
     } = game;
 
     if (value) {
-      points[roundNumber][value] += BEST_VOTE_POINTS;
-      bestVotes[roundNumber][value] += 1;
+      points[roundNumber][playerTurn][value] += BEST_VOTE_POINTS;
+      bestVotes[roundNumber][playerTurn][value] += 1;
     }
 
-    const currentBestVoteWinner = Object.entries(bestVotes[roundNumber]).reduce((accu, curr) => {
-      const [currPid, votes] = curr;
+    const currentBestVoteWinner = Object.entries(bestVotes[roundNumber][playerTurn])
+      .reduce((accu, curr) => {
+        const [currPid, votes] = curr;
 
-      if (votes > accu.votes) {
-        return { pid: currPid, votes };
-      }
-      return accu;
-      // TODO: What if no one has voted?
-    }, { pid: '', votes: -Infinity });
+        if (votes > accu.votes) {
+          return { pid: currPid, votes };
+        }
+        return accu;
+        // TODO: What if no one has voted?
+      }, { pid: '', votes: -Infinity });
 
     game.bestVoteWinner = currentBestVoteWinner;
   });
@@ -134,13 +139,13 @@ io.on('connection', (socket) => {
     const game = rooms[roomId];
     const { value, pid: votePid } = vote;
     const {
-      roundNumber, whoVotes, bestVoteWinner, whoVoteWinners, points,
+      playerTurn, whoVotes, bestVoteWinner, whoVoteWinners, points, roundNumber,
     } = game;
 
     if (value) {
       if (value === bestVoteWinner.pid) {
-        points[roundNumber][value] += WHO_VOTE_POINTS;
-        whoVotes[roundNumber][value] += 1;
+        points[roundNumber][playerTurn][value] += WHO_VOTE_POINTS;
+        whoVotes[roundNumber][playerTurn][value] += 1;
         whoVoteWinners.push(votePid);
       }
     }

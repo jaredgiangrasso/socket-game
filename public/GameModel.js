@@ -129,16 +129,15 @@ class GameModel extends EventEmitter {
     this.emit('new responses', responses);
   }
 
-  nextTurn(player) {
-    this._roundNumber += 1;
-    const { pid } = player;
+  nextTurn(pid) {
+    this._turnNumber += 1;
     this._playerTurn = pid;
 
     if (!this._started) {
       this.setStart();
       this.emit('start game');
     }
-    this.emit('next turn', player);
+    this.emit('next turn', pid);
   }
 
   updateBestVotes(bestVotes) {

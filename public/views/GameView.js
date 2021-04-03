@@ -14,7 +14,7 @@ class GameView extends EventEmitter {
     this._gamePlayerList = document.getElementById('game-player-list');
     this._hostGameButton = document.getElementById('host-game-button');
     this._joinGameButton = document.getElementById('join-game-button');
-    this._nextRoundNumber = document.getElementById('next-round-number');
+    this._nextTurnTitle = document.getElementById('next-turn-title');
     this._overlay = document.getElementById('overlay');
     this._playerVoteList = document.getElementById('player-vote-list');
     this._pointsAwardedList = document.querySelector('.points-awarded');
@@ -209,16 +209,16 @@ class GameView extends EventEmitter {
 
   async newWhoVoteWinners() {
     const {
-      points, players, bestVoteWinner, roundNumber,
+      points, players, bestVoteWinner, playerTurn, roundNumber,
     } = this._model;
 
     const bestVoteWinnerName = players[bestVoteWinner.pid].name;
     showById(this._overlay, true, 'flex');
     this._gameHelp.textContent = '';
     this._bestVoteWinner.textContent = `The winning prompt was written by ${bestVoteWinnerName}!`;
-    Object.entries(points[roundNumber]).forEach(([pid, pointChange]) => {
+    Object.entries(points[roundNumber][playerTurn]).forEach(([pid, pointChange]) => {
       const listItem = document.createElement('li');
-      listItem.textContent = `${players[pid].name}: ${pointChange}`;
+      listItem.textContent = `${players[pid].name}: +${pointChange} points`;
       this._pointsAwardedList.appendChild(listItem);
     });
 
@@ -236,20 +236,20 @@ class GameView extends EventEmitter {
     this._promptTitle.textContent = '';
     this._updatePoints();
 
+    console.log(this._model.players, this._model.playerTurn);
+    const playerTurnName = this._model.players[this._model.playerTurn].name;
+
     showById(this._overlay, true, 'flex');
-    this._nextRoundNumber.textContent = `Round ${this._model.roundNumber}`;
+    this._nextTurnTitle.textContent = `${playerTurnName}'s Turn`;
     await this._setTimer(3);
     showById(this._overlay, false);
-    this._nextRoundNumber.textContent = '';
+    this._nextTurnTitle.textContent = '';
 
     if (this._model.isMyTurn()) {
       showById(this._prompt, true);
 
       this._gameHelp.textContent = 'Write a prompt';
     } else {
-      const { players, playerTurn } = this._model;
-
-      const playerTurnName = players[playerTurn].name;
       this._gameHelp.textContent = `${playerTurnName} is writing a prompt...`;
       showById(this._gameHelp, true);
     }
@@ -267,13 +267,13 @@ class GameView extends EventEmitter {
 
   updateBestVotes() {
     showById(this._responseVoteList, true);
-    const { bestVotes, roundNumber } = this._model;
+    const { bestVotes, playerTurn, roundNumber } = this._model;
 
     [...this._bestVotes].forEach((vote) => {
       const playerListItem = vote.parentElement;
       const playerListItemId = playerListItem.getAttribute('data-id');
 
-      const voteCount = bestVotes[roundNumber][playerListItemId];
+      const voteCount = bestVotes[roundNumber][playerTurn][playerListItemId];
       vote.textContent = `${voteCount} ${voteCount === 1 ? 'vote' : 'votes'}`;
     });
   }
