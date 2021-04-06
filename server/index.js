@@ -7,7 +7,16 @@ const http = require('http');
 const server = http.createServer(app);
 const io = require('socket.io')(http);
 
-app.use(express.static(path.join(__dirname, '../client')));
+if (process.env.NODE_ENV === 'production') {
+  // Serve built client files
+  app.use(express.static('dist'));
+} else {
+  // Let Parcel handle requests
+  console.log('here1');
+  const Bundler = require('parcel-bundler');
+  const bundler = new Bundler('client/index.html');
+  app.use(bundler.middleware());
+}
 
 const Game = require('./Game');
 
@@ -28,7 +37,7 @@ const WHO_VOTE_POINTS = 50;
 const ROUNDS = 2;
 
 io.on('connection', (socket) => {
-  console.log(socket);
+  console.log('here2');
   const pid = socket.id;
   let currentRoom = null;
 
