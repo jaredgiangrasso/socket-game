@@ -6,7 +6,7 @@
   "scripts": {
     "build": "parcel build client/index.html",
     "server": "node server/index.js",
-    "start": "nodemon server/index.js"
+    "start": "cross-env NODE_ENV=development node server/index.js"
   },
   "nodemonConfig": {
     "ignore": [
@@ -21,6 +21,7 @@
     "socket.io-client": "^3.1.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "eslint": "^7.15.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",

@@ -5,24 +5,19 @@ const app = express();
 const http = require('http');
 
 const server = http.createServer(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(server);
 
 if (process.env.NODE_ENV === 'production') {
   // Serve built client files
   app.use(express.static('dist'));
 } else {
   // Let Parcel handle requests
-  console.log('here1');
   const Bundler = require('parcel-bundler');
   const bundler = new Bundler('client/index.html');
   app.use(bundler.middleware());
 }
 
 const Game = require('./Game');
-
-app.get('/', (req, res) => {
-  res.sendFile(path.resolve('./dist/client/index.html'));
-});
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -37,7 +32,6 @@ const WHO_VOTE_POINTS = 50;
 const ROUNDS = 2;
 
 io.on('connection', (socket) => {
-  console.log('here2');
   const pid = socket.id;
   let currentRoom = null;
 
