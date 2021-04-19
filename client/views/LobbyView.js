@@ -15,7 +15,7 @@ class LobbyView extends EventEmitter {
     this._playerCount = document.getElementById('player-count');
     this._lobbyPlayerList = document.getElementById('lobby-player-list');
     this._roundNumber = document.getElementById('round-number');
-    this._startButtonWrapper = document.getElementById('start-button-wrapper');
+    this._startButtonWrapper = document.getElementById('start-button');
 
     this.addPlayerUnlisten = this._model.on('add player', () => this.addPlayer());
     this.nextRoundUnlisten = this._model.on('next round', () => this.nextRound());
