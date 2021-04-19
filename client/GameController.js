@@ -162,7 +162,7 @@ class GameController extends EventEmitter {
       // If user has already manually submitted prompt, it will be available in myPrompt.
       // Otherwise, submit the prompt automatically.
       if (this._model.myPrompt) {
-        this._socketEmit('new prompt', this._model.myPrompt);
+        this._socketEmit('new prompt', { prompt: this._model.myPrompt });
         this._model.myPrompt = '';
       } else {
         this._promptForm.dispatchEvent(new Event('submit'));

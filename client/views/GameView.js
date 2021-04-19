@@ -116,7 +116,6 @@ class GameView extends EventEmitter {
 
   _updatePlayerTurn(pid) {
     const playerListItems = this._gamePlayerList.children;
-    console.log(playerListItems, this._gamePlayerList);
     [...playerListItems].forEach((player) => {
       const currentPlayerId = player.getAttribute('data-id');
 
@@ -143,7 +142,7 @@ class GameView extends EventEmitter {
   }
 
   bestVoteRequested() {
-    this._setTimer(3);
+    this._setTimer(30);
     // showById(this._responseVoteList, false);
   }
 
@@ -162,7 +161,7 @@ class GameView extends EventEmitter {
       this._gameHelp.textContent = 'Players are writing their responses...';
     }
 
-    await this._setTimer(3);
+    await this._setTimer(30);
   }
 
   // TODO: use document fragment for better performance
@@ -208,7 +207,7 @@ class GameView extends EventEmitter {
       }
     });
 
-    await this._setTimer(3);
+    await this._setTimer(30);
   }
 
   newBestVoteWinner() {
@@ -240,7 +239,7 @@ class GameView extends EventEmitter {
       this._pointsAwardedList.appendChild(listItem);
     });
 
-    await this._setTimer(3);
+    await this._setTimer(30);
   }
 
   async nextTurn() {
@@ -272,7 +271,7 @@ class GameView extends EventEmitter {
       showById(this._gameHelp, true);
     }
 
-    await this._setTimer(3);
+    await this._setTimer(30);
   }
 
   removePlayer() {

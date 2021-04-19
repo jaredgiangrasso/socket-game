@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
   socket.on('game start', async ({ roomId }) => {
     const game = rooms[roomId];
     game.started = true;
-    const WAIT_TIME = 3000;
+    const WAIT_TIME = 30000;
 
     for (let i = 0; i < ROUNDS; i++) {
       game.nextRound();
@@ -73,7 +73,7 @@ io.on('connection', (socket) => {
         game.nextTurn();
 
         io.sockets.in(roomId).emit('next turn', game.playerTurn);
-        await sleep(WAIT_TIME * 2);
+        await sleep(WAIT_TIME + 3000);
         io.sockets.in(roomId).emit('request prompt');
         await sleep(WAIT_TIME);
         io.sockets.in(roomId).emit('request response');
